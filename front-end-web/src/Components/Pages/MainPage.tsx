@@ -27,19 +27,19 @@ const MainPage: React.FunctionComponent = () => {
     <Fragment>
       <NavBar state={state} handlers={handlers} classes={classes} />
       <Container>
-        <Typography variant="subtitle1">AuthorizationPage</Typography>
+        <Typography variant="h3">AuthorizationPage</Typography>
         <AuthorizationPage
           state={state}
           handlers={handlers}
           classes={classes}
         />
-        <Typography variant="subtitle1">SelectionPage</Typography>
+        <Typography variant="h3">SelectionPage</Typography>
         <SelectionPage state={state} handlers={handlers} classes={classes} />
-        <Typography variant="subtitle1">ExportPage</Typography>
+        <Typography variant="h3">ExportPage</Typography>
         <ExportPage state={state} handlers={handlers} classes={classes} />
-        <Typography variant="subtitle1">SuccessPage</Typography>
+        <Typography variant="h3">SuccessPage</Typography>
         <SuccessPage state={state} handlers={handlers} classes={classes} />
-        <Typography variant="subtitle1">LoadingPage</Typography>
+        <Typography variant="h3">LoadingPage</Typography>
         <LoadingPage state={state} handlers={handlers} classes={classes} />
       </Container>
       {

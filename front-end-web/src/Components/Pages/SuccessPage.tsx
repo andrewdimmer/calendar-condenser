@@ -11,15 +11,9 @@ const SuccessPage: React.FunctionComponent<Props> = ({
   handlers,
   classes
 }) => {
-  var successVal: string;
-  if (document.cookie === "stage=4") {
-    successVal = "Success!";
-  } else {
-    successVal = "Failure!";
-  }
   return (
     <Fragment>
-      <Typography> {successVal} </Typography>
+      <Typography variant="h4"> Success! </Typography>
       {
         //TODO
       }

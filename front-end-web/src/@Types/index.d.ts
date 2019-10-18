@@ -5,17 +5,22 @@ import { calendar_v3 } from "googleapis";
  */
 export declare interface State {
   busyMessage: string;
-  errorMessage: string;
-  hasUserToken: boolean;
+  notification: { message: string; open: boolean };
   userToken: string;
   calendars: calendar_v3.Resource$Calendarlist | null;
+  stage: stage;
+  selectedCalendars: boolean[] | null;
 }
 
 /**
  * TODO: Add Documentation
  */
 export declare interface Handlers {
-  // TODO
+  handleAuth: () => void;
+  handleLogout: () => void;
+  handleSelect: (index: number) => void;
+  handleExport: (name: string) => void;
+  handleChangeStage: (stage: number) => void;
 }
 
 /**

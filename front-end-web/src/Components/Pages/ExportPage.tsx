@@ -5,24 +5,29 @@ import { Button, TextField } from "@material-ui/core";
 /**
  * TODO: Add Documentation
  */
+let calendarName: string = "";
 
 const ExportPage: React.FunctionComponent<Props> = ({
   state,
   handlers,
   classes
 }) => {
-  document.cookie = "stage=4";
   return (
     <Fragment>
+      <TextField
+        variant="standard"
+        label="Calendar name"
+        onChange={e => (calendarName = e.target.value)}
+      ></TextField>
       <Button
         variant="contained"
         onClick={function() {
-          document.cookie = "stage=4";
+          handlers.handleExport(calendarName);
+          handlers.handleChangeStage(4);
         }}
       >
         Export
       </Button>
-      <TextField variant="standard" label="Calendar name"></TextField>
       {
         //TODO
       }

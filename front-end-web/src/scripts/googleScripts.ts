@@ -3,9 +3,11 @@ import { calendar_v3 } from "googleapis";
 /**
  * TODO: Add Documentation
  */
-export function getAuthToken(userToken: string): string {
+export function getAuthToken(userToken: string): Promise<string> {
   //TODO
-  return "";
+  return new Promise((resolve, reject) => {
+    resolve("");
+  });
 }
 
 /**
@@ -13,9 +15,11 @@ export function getAuthToken(userToken: string): string {
  */
 export function getUserCalendars(
   userToken: string
-): calendar_v3.Resource$Calendarlist | null {
+): Promise<calendar_v3.Resource$Calendarlist | null> {
   //TODO
-  return null;
+  return new Promise((resolve, reject) => {
+    reject(null);
+  });
 }
 
 /**
@@ -23,8 +27,11 @@ export function getUserCalendars(
  */
 export function createExportCalendar(
   userToken: string,
-  calendars: calendar_v3.Resource$Calendarlist
-): boolean {
+  calendars: calendar_v3.Resource$Calendarlist,
+  name: string
+): Promise<boolean> {
   //TODO
-  return false;
+  return new Promise((resolve, reject) => {
+    resolve(true);
+  });
 }

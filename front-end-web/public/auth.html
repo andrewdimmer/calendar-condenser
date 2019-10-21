@@ -14,8 +14,6 @@
       document.cookie = `userToken=${token}; expires=${date.toString()}`;
       console.log(token);
     }
-    setTimeout(() => {
-      window.open("../", "_self");
-    }, 3000);
+    window.open("../", "_self");
   </script>
 </html>

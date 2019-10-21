@@ -1,13 +1,26 @@
 import { calendar_v3 } from "googleapis";
+import axios from "axios";
 
 /**
  * TODO: Add Documentation
  */
-export function getAuthToken(userToken: string): Promise<string> {
-  //TODO
-  return new Promise((resolve, reject) => {
-    resolve("");
-  });
+export function getAuthToken(userToken: string): Promise<any> {
+  if (!userToken) {
+    return axios(
+      "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_auth_url"
+    )
+      .then(url => {
+        return url;
+      })
+      .catch(err => {
+        return err;
+      });
+  } else {
+    console.log("Already logged in!");
+    return new Promise((resolve, reject) => {
+      resolve("Already logged in!");
+    });
+  }
 }
 
 /**

@@ -7,7 +7,7 @@ export const getAuthURL = functions.https.onRequest((request, response) => {
   const oauth2Client = new google.auth.OAuth2(
     functions.config().oauth.client_id,
     functions.config().oauth.client_secret,
-    request.baseUrl
+    "https://calendar-condenser-gcp.firebaseapp.com/auth.html"
   );
 
   const scopes = ["https://www.googleapis.com/auth/calendar"];
@@ -20,5 +20,6 @@ export const getAuthURL = functions.https.onRequest((request, response) => {
     scope: scopes
   });
 
+  response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: Make more secure later!
   response.send(url);
 });

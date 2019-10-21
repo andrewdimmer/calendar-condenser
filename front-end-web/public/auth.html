@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<!-- NOTE: This page just saves the token as a cookie. -->
+<!-- TODO: Introduce State Security -->
+<html>
+  <script>
+    const url = window.location.href;
+    const tokenStartIndex = url.indexOf("?code=") + 6;
+    const tokenStopIndex = url.indexOf("&scope=");
+    console.log(url);
+    if (tokenStartIndex > 0 && tokenStopIndex > 0) {
+      const token = url.substring(tokenStartIndex, tokenStopIndex);
+      document.cookie = `userToken=${token}`;
+      console.log(token);
+    }
+    window.open("../", "_self");
+  </script>
+</html>

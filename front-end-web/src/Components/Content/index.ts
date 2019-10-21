@@ -1,4 +1,4 @@
 import PrivacyPolicy from "./PrivacyPolicy";
 
-// A central location to get all content pages from.
+// A central location to get all reusable content blocks from.
 export { PrivacyPolicy };

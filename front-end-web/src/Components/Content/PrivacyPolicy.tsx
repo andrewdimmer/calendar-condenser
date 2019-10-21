@@ -1,20 +1,19 @@
-import React, { Fragment } from "react";
 import {
-  Typography,
-  ListItem,
-  List,
-  Theme,
-  createStyles,
-  withStyles,
-  IconButton,
-  WithStyles,
   Button,
-  Dialog
+  createStyles,
+  Dialog,
+  IconButton,
+  List,
+  ListItem,
+  Theme,
+  Typography,
+  withStyles,
+  WithStyles
 } from "@material-ui/core";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
-import MuiDialogActions from "@material-ui/core/DialogActions";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import CloseIcon from "@material-ui/icons/Close";
+import React, { Fragment } from "react";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -59,13 +58,6 @@ const DialogContent = withStyles((theme: Theme) => ({
     padding: theme.spacing(2)
   }
 }))(MuiDialogContent);
-
-const DialogActions = withStyles((theme: Theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1)
-  }
-}))(MuiDialogActions);
 
 /**
  * PrivacyPolicy

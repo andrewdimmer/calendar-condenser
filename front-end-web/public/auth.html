@@ -8,10 +8,10 @@
     const tokenStopIndex = url.indexOf("&scope=");
     console.log(url);
     if (tokenStartIndex > 0 && tokenStopIndex > 0) {
+      const date = new Date();
+      date.setDate(date.getDate() + 1);
       const token = url.substring(tokenStartIndex, tokenStopIndex);
-      const currentDate = new Date();
-      const expireDate = currentDate.setDate(currentDate.getDate() + 1);
-      document.cookie = `userToken=${token}; expires=${expireDate.toLocaleString}`;
+      document.cookie = `userToken=${token}; expires=${date.toString()}`;
       console.log(token);
     }
     setTimeout(() => {

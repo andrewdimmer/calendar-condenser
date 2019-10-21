@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { State, Handlers } from "../../@Types";
 import { SelectionPage, AuthorizationPage, ExportPage, SuccessPage } from "./";
+import { PrivacyPolicy } from "../Content";
 import { Container, Typography } from "@material-ui/core";
 import { NavBar } from "../Layouts";
 import LoadingPage from "./LoadingPage";
@@ -192,6 +193,7 @@ const MainPage: React.FunctionComponent = () => {
         <SuccessPage state={state} handlers={handlers} classes={classes} />
         <Typography variant="h3">LoadingPage</Typography>
         <LoadingPage state={state} handlers={handlers} classes={classes} />
+        <PrivacyPolicy />
       </Container>
       {
         //TODO: Add logic to control when each item is displayed

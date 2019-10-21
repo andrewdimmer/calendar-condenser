@@ -15,8 +15,9 @@ const ExportPage: React.FunctionComponent<Props> = ({
   return (
     <Fragment>
       <TextField
-        variant="standard"
+        variant="outlined"
         label="Calendar name"
+        fullWidth={true}
         onChange={e => (calendarName = e.target.value)}
       ></TextField>
       <Button

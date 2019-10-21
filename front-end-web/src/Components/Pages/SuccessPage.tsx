@@ -5,7 +5,6 @@ import { Typography } from "@material-ui/core";
  * TODO: Add Documentation
  */
 
-var stage = 4;
 const SuccessPage: React.FunctionComponent<Props> = ({
   state,
   handlers,

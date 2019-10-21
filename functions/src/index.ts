@@ -3,8 +3,11 @@ import { getAuthURL } from "./authHandlers";
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
+
+// helloWorld exists as a debugging tool to make sure that the deployment is successful. TODO: REMOVE LATER!
 export const helloWorld = functions.https.onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
 
+// Auth functions
 export const get_auth_url = getAuthURL;

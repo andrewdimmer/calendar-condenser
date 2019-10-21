@@ -5,8 +5,8 @@ import { google } from "googleapis";
 // https://firebase.google.com/docs/functions/typescript
 export const getAuthURL = functions.https.onRequest((request, response) => {
   const oauth2Client = new google.auth.OAuth2(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
+    functions.config().oauth.client_id,
+    functions.config().oauth.client_secret,
     request.baseUrl
   );
 

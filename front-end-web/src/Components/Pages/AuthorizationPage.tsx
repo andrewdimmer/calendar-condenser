@@ -19,15 +19,20 @@ const AuthorizationPage: React.FunctionComponent<Props> = ({
       display: "none"
     }
   }));
-
   const classes2 = useStyles();
   return (
     <Fragment>
       <Typography>
         Press this button to log in to the Authorization page
       </Typography>
-      <Button variant="outlined" color="primary" className={classes.button}>
-        Primary
+      <Button
+        variant="contained"
+        size="large"
+        color="primary"
+        className={classes2.button}
+        onClick={handlers.handleAuth}
+      >
+        Login and Authorize
       </Button>
     </Fragment>
   );

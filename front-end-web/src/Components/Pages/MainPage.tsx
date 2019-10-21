@@ -44,6 +44,7 @@ const MainPage: React.FunctionComponent = () => {
    * TODO: Add documentation
    */
   const handleAuth = () => {
+    // MAYBE: Move all of the code below into onLoad?
     const gettingAuthState: State = {
       busyMessage: "Getting Auth Token...",
       notification: state.notification,
@@ -54,6 +55,14 @@ const MainPage: React.FunctionComponent = () => {
     };
     setState(gettingAuthState);
     getAuthToken(state.userToken)
+      .then(url => {
+        console.log(url);
+        window.open(url.data, "_self");
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      /*
       .then(userToken => {
         document.cookie = `userToken=${userToken}`;
         const userTokenState: State = {
@@ -97,7 +106,7 @@ const MainPage: React.FunctionComponent = () => {
             console.log(err);
             // apiError(err);     // Need to add err handler here
           });
-      })
+      }) */
       .catch(err => {
         console.log(err);
         // apiError(err);     // Need to add err handler here

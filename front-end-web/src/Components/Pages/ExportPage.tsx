@@ -21,6 +21,8 @@ const ExportPage: React.FunctionComponent<Props> = ({
       ></TextField>
       <Button
         variant="contained"
+        color="primary"
+        size="large"
         onClick={function() {
           handlers.handleExport(calendarName);
           handlers.handleChangeStage(4);

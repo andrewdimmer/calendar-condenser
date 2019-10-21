@@ -9,9 +9,13 @@
     console.log(url);
     if (tokenStartIndex > 0 && tokenStopIndex > 0) {
       const token = url.substring(tokenStartIndex, tokenStopIndex);
-      document.cookie = `userToken=${token}`;
+      const currentDate = new Date();
+      const expireDate = currentDate.setDate(currentDate.getDate() + 1);
+      document.cookie = `userToken=${token}; expires=${expireDate.toLocaleString}`;
       console.log(token);
     }
-    window.open("../", "_self");
+    setTimeout(() => {
+      window.open("../", "_self");
+    }, 3000);
   </script>
 </html>

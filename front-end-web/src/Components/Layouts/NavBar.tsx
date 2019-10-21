@@ -33,7 +33,6 @@ const NavBar: React.FunctionComponent<Props> = ({
   handlers,
   classes
 }) => {
-  const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -43,23 +42,24 @@ const NavBar: React.FunctionComponent<Props> = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const classes2 = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div className={classes2.root}>
       <AppBar position="static">
         <Toolbar>
           <IconButton
             edge="start"
-            className={classes.menuButton}
+            className={classes2.menuButton}
             color="inherit"
             aria-label="menu"
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
+          <Typography variant="h6" className={classes2.title}>
             Calendar
           </Typography>
-          {auth && (
+          {state.userToken && (
             <div>
               <IconButton
                 aria-label="account of current user"
@@ -87,7 +87,7 @@ const NavBar: React.FunctionComponent<Props> = ({
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem
-                // onClick={handleLogout}
+                 onClick={handlers.handleLogout}
                 >
                   Logout
                 </MenuItem>

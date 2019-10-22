@@ -171,20 +171,20 @@ const MainPage: React.FunctionComponent = () => {
             const userTokenState: State = {
               busyMessage: "Getting Calendar List...",
               notification: state.notification,
-              userToken: state.userToken,
+              userToken: userTokenFromCookie,
               calendars: state.calendars,
               selectedCalendars: state.selectedCalendars,
               stage: state.stage
             };
             setState(userTokenState);
-            getUserCalendars(state.userToken)
+            getUserCalendars(userTokenFromCookie)
               .then(calendarList => {
                 if (calendarList) {
                   setTimeout(() => {
                     const calendarState: State = {
                       busyMessage: "",
                       notification: state.notification,
-                      userToken: state.userToken,
+                      userToken: userTokenFromCookie,
                       calendars: calendarList,
                       selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
                       stage: 2
@@ -197,10 +197,10 @@ const MainPage: React.FunctionComponent = () => {
                       busyMessage: "",
                       notification: {
                         message:
-                          "Unable to get calendars. Please refresh the page.",
+                          "Unable to get calendars. Please try re-authorizing.",
                         open: true
                       },
-                      userToken: state.userToken,
+                      userToken: "",
                       calendars: null,
                       selectedCalendars: null,
                       stage: 1

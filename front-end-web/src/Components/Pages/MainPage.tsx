@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { State, Handlers } from "../../@Types";
 import { SelectionPage, AuthorizationPage, ExportPage, SuccessPage } from "./";
+import { PrivacyPolicy } from "../Content";
 import { Container, Typography } from "@material-ui/core";
 import { NavBar } from "../Layouts";
 import LoadingPage from "./LoadingPage";
@@ -44,6 +45,7 @@ const MainPage: React.FunctionComponent = () => {
    * TODO: Add documentation
    */
   const handleAuth = () => {
+    // MAYBE: Move all of the code below into onLoad?
     const gettingAuthState: State = {
       busyMessage: "Getting Auth Token...",
       notification: state.notification,
@@ -54,6 +56,14 @@ const MainPage: React.FunctionComponent = () => {
     };
     setState(gettingAuthState);
     getAuthToken(state.userToken)
+      .then(url => {
+        console.log(url);
+        window.open(url.data, "_self");
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      /*
       .then(userToken => {
         document.cookie = `userToken=${userToken}`;
         const userTokenState: State = {
@@ -97,7 +107,7 @@ const MainPage: React.FunctionComponent = () => {
             console.log(err);
             // apiError(err);     // Need to add err handler here
           });
-      })
+      }) */
       .catch(err => {
         console.log(err);
         // apiError(err);     // Need to add err handler here
@@ -183,6 +193,7 @@ const MainPage: React.FunctionComponent = () => {
         <SuccessPage state={state} handlers={handlers} classes={classes} />
         <Typography variant="h3">LoadingPage</Typography>
         <LoadingPage state={state} handlers={handlers} classes={classes} />
+        <PrivacyPolicy />
       </Container>
       {
         //TODO: Add logic to control when each item is displayed

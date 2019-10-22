@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import React, { Fragment } from "react";
 import { Handlers, State } from "../../@Types";
-import { getAuthToken, getUserCalendars } from "../../scripts";
+import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
 import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
 import { AuthorizationPage, ExportPage, SelectionPage, SuccessPage } from "./";
@@ -38,7 +38,7 @@ const MainPage: React.FunctionComponent = () => {
    * Clears the userToken from the state and the cookie.
    */
   const handleLogout = (): void => {
-    document.cookie = "userToken=";
+    document.cookie = "oauth=";
     const newState: State = {
       busyMessage: state.busyMessage,
       notification: state.notification,
@@ -65,7 +65,7 @@ const MainPage: React.FunctionComponent = () => {
       stage: state.stage
     };
     setState(gettingAuthState);
-    getAuthToken(state.userToken)
+    getAuthUrl(state.userToken)
       .then(url => {
         console.log(url);
         window.open(url.data, "_self");
@@ -115,67 +115,52 @@ const MainPage: React.FunctionComponent = () => {
         setLoaded(true);
         const cookie = document.cookie;
         console.log("cookie", cookie);
-        const userTokenFromCookie = cookie.substr(
-          cookie.indexOf("userToken=") + 10
-        );
-        if (userTokenFromCookie) {
+        const oauthFromCookie = cookie.substr(cookie.indexOf("oauth=") + 6);
+        if (oauthFromCookie) {
           const loadingAuthState: State = {
             busyMessage: "Loading User Token...",
             notification: state.notification,
-            userToken: userTokenFromCookie,
+            userToken: state.userToken,
             calendars: state.calendars,
             selectedCalendars: state.selectedCalendars,
             stage: state.stage
           };
           setState(loadingAuthState);
-          setTimeout(() => {
-            const userTokenState: State = {
-              busyMessage: "Getting Calendar List...",
-              notification: state.notification,
-              userToken: userTokenFromCookie,
-              calendars: state.calendars,
-              selectedCalendars: state.selectedCalendars,
-              stage: state.stage
-            };
-            setState(userTokenState);
-            getUserCalendars(userTokenFromCookie)
-              .then(calendarList => {
-                // if (calendarList) {
-                setTimeout(() => {
-                  const calendarState: State = {
-                    busyMessage: "",
-                    notification: state.notification,
-                    userToken: userTokenFromCookie,
-                    calendars: calendarList,
-                    selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
-                    stage: 1
-                  };
-                  setState(calendarState);
-                }, 1000);
-                /* } else {
-                  setTimeout(() => {
-                    document.cookie = "userToken=";
-                    const calendarErrorState: State = {
-                      busyMessage: "",
-                      notification: {
-                        message:
-                          "Unable to get calendars. Please try re-authorizing.",
-                        open: true
-                      },
-                      userToken: "",
-                      calendars: null,
-                      selectedCalendars: null,
-                      stage: 0
-                    };
-                    setState(calendarErrorState);
-                  }, 1000);
-                }*/
+          if (oauthFromCookie.indexOf("1/") === 0) {
+            console.log("Found oauth code ", oauthFromCookie);
+            handleGetCalendars(state.userToken);
+          } else if (oauthFromCookie.indexOf("4/") === 0) {
+            console.log("Found oauth code ", oauthFromCookie);
+            getAuthToken(oauthFromCookie)
+              .then(tokens => {
+                console.log("Returned tokens");
+                if (tokens && tokens.refresh_token) {
+                  document.cookie = `oauth=${tokens.refresh_token}`;
+                  handleGetCalendars(tokens.refresh_token);
+                } else {
+                  throw new Error("No refresh token");
+                }
               })
               .catch(err => {
                 console.log(err);
-                // apiError(err);     // Need to add err handler here
+                document.cookie = "oauth=";
               });
-          }, 1000);
+          } else {
+            console.log("Found oauth access token ", oauthFromCookie);
+            const tokenErrorState: State = {
+              busyMessage: "",
+              notification: {
+                message:
+                  "Unable to get token. Please logout and try re-authorizing.",
+                open: true
+              },
+              userToken: "",
+              calendars: null,
+              selectedCalendars: null,
+              stage: 1
+            };
+            setState(tokenErrorState);
+          }
         } else {
           const notLoadingAnymoreState: State = {
             busyMessage: "",
@@ -190,6 +175,61 @@ const MainPage: React.FunctionComponent = () => {
         }
       }, 2000);
     }
+  };
+
+  /**
+   * handleGetCalendars
+   * A helper method for handleLoad
+   */
+  const handleGetCalendars = (oauthToken: string) => {
+    setTimeout(() => {
+      const userTokenState: State = {
+        busyMessage: "Getting Calendar List...",
+        notification: state.notification,
+        userToken: oauthToken,
+        calendars: state.calendars,
+        selectedCalendars: state.selectedCalendars,
+        stage: state.stage
+      };
+      setState(userTokenState);
+      getUserCalendars(oauthToken)
+        .then(calendarList => {
+          if (calendarList) {
+            setTimeout(() => {
+              const calendarState: State = {
+                busyMessage: "",
+                notification: state.notification,
+                userToken: oauthToken,
+                calendars: calendarList,
+                selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
+                stage: 1
+              };
+              setState(calendarState);
+            }, 1000);
+          } else {
+            setTimeout(() => {
+              document.cookie = "oauth=";
+              const calendarErrorState: State = {
+                busyMessage: "",
+                notification: {
+                  message:
+                    "Unable to get calendars. Please logout and try re-authorizing.",
+                  open: true
+                },
+                userToken: oauthToken,
+                calendars: null,
+                selectedCalendars: null,
+                stage: 1
+              };
+              setState(calendarErrorState);
+            }, 1000);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          // apiError(err);     // Need to add err handler here
+        });
+    }, 1000);
   };
 
   const handleChangeStage = (stage: number) => {

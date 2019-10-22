@@ -1,11 +1,20 @@
+import {
+  Container,
+  createStyles,
+  makeStyles,
+  Step,
+  StepLabel,
+  Stepper,
+  Theme,
+  Typography
+} from "@material-ui/core";
 import React, { Fragment } from "react";
-import { State, Handlers } from "../../@Types";
-import { SelectionPage, AuthorizationPage, ExportPage, SuccessPage } from "./";
-import { PrivacyPolicy } from "../Content";
-import { Container, Typography } from "@material-ui/core";
-import { NavBar } from "../Layouts";
-import LoadingPage from "./LoadingPage";
+import { Handlers, State } from "../../@Types";
 import { getAuthToken, getUserCalendars } from "../../scripts";
+import { PrivacyPolicy } from "../Content";
+import { NavBar } from "../Layouts";
+import { AuthorizationPage, ExportPage, SelectionPage, SuccessPage } from "./";
+import LoadingPage from "./LoadingPage";
 
 /**
  * TODO: Add Documentation
@@ -16,7 +25,7 @@ const MainPage: React.FunctionComponent = () => {
     notification: { message: "", open: false },
     userToken: "",
     calendars: null,
-    stage: 1,
+    stage: 0,
     selectedCalendars: null
   };
   const [state, setState] = React.useState(initialState);
@@ -36,7 +45,7 @@ const MainPage: React.FunctionComponent = () => {
       userToken: "",
       calendars: null,
       selectedCalendars: null,
-      stage: 1
+      stage: 0
     };
     setState(newState);
   };
@@ -131,19 +140,19 @@ const MainPage: React.FunctionComponent = () => {
             setState(userTokenState);
             getUserCalendars(userTokenFromCookie)
               .then(calendarList => {
-                if (calendarList) {
-                  setTimeout(() => {
-                    const calendarState: State = {
-                      busyMessage: "",
-                      notification: state.notification,
-                      userToken: userTokenFromCookie,
-                      calendars: calendarList,
-                      selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
-                      stage: 2
-                    };
-                    setState(calendarState);
-                  }, 1000);
-                } else {
+                // if (calendarList) {
+                setTimeout(() => {
+                  const calendarState: State = {
+                    busyMessage: "",
+                    notification: state.notification,
+                    userToken: userTokenFromCookie,
+                    calendars: calendarList,
+                    selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
+                    stage: 1
+                  };
+                  setState(calendarState);
+                }, 1000);
+                /* } else {
                   setTimeout(() => {
                     document.cookie = "userToken=";
                     const calendarErrorState: State = {
@@ -156,11 +165,11 @@ const MainPage: React.FunctionComponent = () => {
                       userToken: "",
                       calendars: null,
                       selectedCalendars: null,
-                      stage: 1
+                      stage: 0
                     };
                     setState(calendarErrorState);
                   }, 1000);
-                }
+                }*/
               })
               .catch(err => {
                 console.log(err);
@@ -203,9 +212,15 @@ const MainPage: React.FunctionComponent = () => {
     handleSelect
   };
 
-  const classes = {
-    // TODO
-  };
+  const styles = makeStyles((theme: Theme) =>
+    createStyles({
+      topMargined: {
+        marginTop: theme.spacing(2)
+      }
+    })
+  );
+
+  const classes = styles();
   return (
     <Fragment>
       {handleLoad()}
@@ -215,28 +230,58 @@ const MainPage: React.FunctionComponent = () => {
       {!state.busyMessage && (
         <Fragment>
           <NavBar state={state} handlers={handlers} classes={classes} />
-          <Container>
-            <Typography variant="h3">AuthorizationPage</Typography>
-            <AuthorizationPage
-              state={state}
-              handlers={handlers}
-              classes={classes}
-            />
-            <Typography variant="h3">SelectionPage</Typography>
-            <SelectionPage
-              state={state}
-              handlers={handlers}
-              classes={classes}
-            />
-            <Typography variant="h3">ExportPage</Typography>
-            <ExportPage state={state} handlers={handlers} classes={classes} />
-            <Typography variant="h3">SuccessPage</Typography>
-            <SuccessPage state={state} handlers={handlers} classes={classes} />
+          <Container className={classes.topMargined}>
+            <Stepper activeStep={state.stage}>
+              <Step>
+                <StepLabel>Authorize Access</StepLabel>
+              </Step>
+              <Step>
+                <StepLabel>Select Calendars</StepLabel>
+              </Step>
+              <Step>
+                <StepLabel>Export and Share</StepLabel>
+              </Step>
+            </Stepper>
+            {state.stage === 0 && (
+              <Fragment>
+                <Typography variant="h3">Authorization</Typography>
+                <AuthorizationPage
+                  state={state}
+                  handlers={handlers}
+                  classes={classes}
+                />
+              </Fragment>
+            )}
+            {state.stage === 1 && (
+              <Fragment>
+                <Typography variant="h3">Selection</Typography>
+                <SelectionPage
+                  state={state}
+                  handlers={handlers}
+                  classes={classes}
+                />
+              </Fragment>
+            )}
+            {state.stage === 2 && (
+              <Fragment>
+                <Typography variant="h3">Export</Typography>
+                <ExportPage
+                  state={state}
+                  handlers={handlers}
+                  classes={classes}
+                />
+              </Fragment>
+            )}
+            {state.stage === 3 && (
+              <SuccessPage
+                state={state}
+                handlers={handlers}
+                classes={classes}
+              />
+            )}
+            <br />
             <PrivacyPolicy />
           </Container>
-          {
-            //TODO: Add logic to control when each item is displayed
-          }
         </Fragment>
       )}
     </Fragment>

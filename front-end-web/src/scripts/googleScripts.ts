@@ -31,7 +31,7 @@ export function getUserCalendars(
 ): Promise<calendar_v3.Resource$Calendarlist | null> {
   //TODO
   return new Promise((resolve, reject) => {
-    reject(null);
+    resolve(null);
   });
 }
 

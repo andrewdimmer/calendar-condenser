@@ -20,6 +20,7 @@ const MainPage: React.FunctionComponent = () => {
     selectedCalendars: null
   };
   const [state, setState] = React.useState(initialState);
+  const [loaded, setLoaded] = React.useState(false);
 
   // TODO: Add better documentation
   /**
@@ -28,7 +29,7 @@ const MainPage: React.FunctionComponent = () => {
    * Clears the userToken from the state and the cookie.
    */
   const handleLogout = (): void => {
-    document.cookie = "";
+    document.cookie = "userToken=";
     const newState: State = {
       busyMessage: state.busyMessage,
       notification: state.notification,
@@ -60,54 +61,6 @@ const MainPage: React.FunctionComponent = () => {
         console.log(url);
         window.open(url.data, "_self");
       })
-      .catch(err => {
-        console.log(err);
-      })
-      /*
-      .then(userToken => {
-        document.cookie = `userToken=${userToken}`;
-        const userTokenState: State = {
-          busyMessage: "Getting Calendar List...",
-          notification: state.notification,
-          userToken: userToken,
-          calendars: state.calendars,
-          selectedCalendars: state.selectedCalendars,
-          stage: state.stage
-        };
-        setState(userTokenState);
-        const calendars = getUserCalendars(state.userToken)
-          .then(calendarList => {
-            // TODO: ADD CODE HERE
-            if (calendarList) {
-              const calendarState: State = {
-                busyMessage: "",
-                notification: state.notification,
-                userToken: userToken,
-                calendars: calendarList,
-                selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
-                stage: 2
-              };
-              setState(calendarState);
-            } else {
-              const calendarErrorState: State = {
-                busyMessage: "",
-                notification: {
-                  message: "Unable to get calendars. Please refresh the page.",
-                  open: true
-                },
-                userToken: userToken,
-                calendars: null,
-                selectedCalendars: null,
-                stage: 1
-              };
-              setState(calendarErrorState);
-            }
-          })
-          .catch(err => {
-            console.log(err);
-            // apiError(err);     // Need to add err handler here
-          });
-      }) */
       .catch(err => {
         console.log(err);
         // apiError(err);     // Need to add err handler here
@@ -148,8 +101,86 @@ const MainPage: React.FunctionComponent = () => {
 
   // TODO: Add documentation
   const handleLoad = () => {
-    const cookie = document.cookie;
-    // TODO: Write a function to pick up where the user
+    if (!loaded) {
+      setTimeout(() => {
+        setLoaded(true);
+        const cookie = document.cookie;
+        console.log("cookie", cookie);
+        const userTokenFromCookie = cookie.substr(
+          cookie.indexOf("userToken=") + 10
+        );
+        if (userTokenFromCookie) {
+          const loadingAuthState: State = {
+            busyMessage: "Loading User Token...",
+            notification: state.notification,
+            userToken: userTokenFromCookie,
+            calendars: state.calendars,
+            selectedCalendars: state.selectedCalendars,
+            stage: state.stage
+          };
+          setState(loadingAuthState);
+          setTimeout(() => {
+            const userTokenState: State = {
+              busyMessage: "Getting Calendar List...",
+              notification: state.notification,
+              userToken: userTokenFromCookie,
+              calendars: state.calendars,
+              selectedCalendars: state.selectedCalendars,
+              stage: state.stage
+            };
+            setState(userTokenState);
+            getUserCalendars(userTokenFromCookie)
+              .then(calendarList => {
+                if (calendarList) {
+                  setTimeout(() => {
+                    const calendarState: State = {
+                      busyMessage: "",
+                      notification: state.notification,
+                      userToken: userTokenFromCookie,
+                      calendars: calendarList,
+                      selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
+                      stage: 2
+                    };
+                    setState(calendarState);
+                  }, 1000);
+                } else {
+                  setTimeout(() => {
+                    document.cookie = "userToken=";
+                    const calendarErrorState: State = {
+                      busyMessage: "",
+                      notification: {
+                        message:
+                          "Unable to get calendars. Please try re-authorizing.",
+                        open: true
+                      },
+                      userToken: "",
+                      calendars: null,
+                      selectedCalendars: null,
+                      stage: 1
+                    };
+                    setState(calendarErrorState);
+                  }, 1000);
+                }
+              })
+              .catch(err => {
+                console.log(err);
+                // apiError(err);     // Need to add err handler here
+              });
+          }, 1000);
+        } else {
+          const notLoadingAnymoreState: State = {
+            busyMessage: "",
+            notification: state.notification,
+            userToken: state.userToken,
+            calendars: state.calendars,
+            selectedCalendars: state.selectedCalendars,
+            stage: state.stage
+          };
+          setState(notLoadingAnymoreState);
+          // TODO: Write a function to pick up where the user
+        }
+      }, 2000);
+    }
   };
 
   const handleChangeStage = (stage: number) => {
@@ -177,27 +208,37 @@ const MainPage: React.FunctionComponent = () => {
   };
   return (
     <Fragment>
-      <NavBar state={state} handlers={handlers} classes={classes} />
-      <Container>
-        <Typography variant="h3">AuthorizationPage</Typography>
-        <AuthorizationPage
-          state={state}
-          handlers={handlers}
-          classes={classes}
-        />
-        <Typography variant="h3">SelectionPage</Typography>
-        <SelectionPage state={state} handlers={handlers} classes={classes} />
-        <Typography variant="h3">ExportPage</Typography>
-        <ExportPage state={state} handlers={handlers} classes={classes} />
-        <Typography variant="h3">SuccessPage</Typography>
-        <SuccessPage state={state} handlers={handlers} classes={classes} />
-        <Typography variant="h3">LoadingPage</Typography>
+      {handleLoad()}
+      {state.busyMessage && (
         <LoadingPage state={state} handlers={handlers} classes={classes} />
-        <PrivacyPolicy />
-      </Container>
-      {
-        //TODO: Add logic to control when each item is displayed
-      }
+      )}
+      {!state.busyMessage && (
+        <Fragment>
+          <NavBar state={state} handlers={handlers} classes={classes} />
+          <Container>
+            <Typography variant="h3">AuthorizationPage</Typography>
+            <AuthorizationPage
+              state={state}
+              handlers={handlers}
+              classes={classes}
+            />
+            <Typography variant="h3">SelectionPage</Typography>
+            <SelectionPage
+              state={state}
+              handlers={handlers}
+              classes={classes}
+            />
+            <Typography variant="h3">ExportPage</Typography>
+            <ExportPage state={state} handlers={handlers} classes={classes} />
+            <Typography variant="h3">SuccessPage</Typography>
+            <SuccessPage state={state} handlers={handlers} classes={classes} />
+            <PrivacyPolicy />
+          </Container>
+          {
+            //TODO: Add logic to control when each item is displayed
+          }
+        </Fragment>
+      )}
     </Fragment>
   );
 };

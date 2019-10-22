@@ -1,3 +1,4 @@
+import { Checkbox, List, ListItem, Button } from "@material-ui/core";
 import React, { Fragment } from "react";
 import { Props } from "../../@Types";
 
@@ -12,7 +13,36 @@ const SelectionPage: React.FunctionComponent<Props> = ({
   return (
     <Fragment>
       {
-        //TODO
+        <List>
+          {state.calendars.map((item: any, i: number) => {
+            console.log(i);
+
+            return (
+              <Fragment key={i}>
+                <ListItem
+                  button
+                  onClick={() => {
+                    handlers.handleSelect(i);
+                  }}
+                >
+                  <Checkbox checked={state.selectedCalendars[i]} />
+
+                  {state.calendars[i].summary}
+                </ListItem>
+              </Fragment>
+            );
+          })}
+
+          <Button
+            onClick={() => {
+              handlers.handleChangeStage(3);
+            }}
+          >
+            Next
+          </Button>
+
+          <br />
+        </List>
       }
     </Fragment>
   );

@@ -29,7 +29,7 @@ const MainPage: React.FunctionComponent = () => {
    * Clears the userToken from the state and the cookie.
    */
   const handleLogout = (): void => {
-    document.cookie = "";
+    document.cookie = "userToken=";
     const newState: State = {
       busyMessage: state.busyMessage,
       notification: state.notification,
@@ -61,54 +61,6 @@ const MainPage: React.FunctionComponent = () => {
         console.log(url);
         window.open(url.data, "_self");
       })
-      .catch(err => {
-        console.log(err);
-      })
-      /*
-      .then(userToken => {
-        document.cookie = `userToken=${userToken}`;
-        const userTokenState: State = {
-          busyMessage: "Getting Calendar List...",
-          notification: state.notification,
-          userToken: userToken,
-          calendars: state.calendars,
-          selectedCalendars: state.selectedCalendars,
-          stage: state.stage
-        };
-        setState(userTokenState);
-        const calendars = getUserCalendars(state.userToken)
-          .then(calendarList => {
-            // TODO: ADD CODE HERE
-            if (calendarList) {
-              const calendarState: State = {
-                busyMessage: "",
-                notification: state.notification,
-                userToken: userToken,
-                calendars: calendarList,
-                selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
-                stage: 2
-              };
-              setState(calendarState);
-            } else {
-              const calendarErrorState: State = {
-                busyMessage: "",
-                notification: {
-                  message: "Unable to get calendars. Please refresh the page.",
-                  open: true
-                },
-                userToken: userToken,
-                calendars: null,
-                selectedCalendars: null,
-                stage: 1
-              };
-              setState(calendarErrorState);
-            }
-          })
-          .catch(err => {
-            console.log(err);
-            // apiError(err);     // Need to add err handler here
-          });
-      }) */
       .catch(err => {
         console.log(err);
         // apiError(err);     // Need to add err handler here
@@ -193,6 +145,7 @@ const MainPage: React.FunctionComponent = () => {
                   }, 1000);
                 } else {
                   setTimeout(() => {
+                    document.cookie = "userToken=";
                     const calendarErrorState: State = {
                       busyMessage: "",
                       notification: {

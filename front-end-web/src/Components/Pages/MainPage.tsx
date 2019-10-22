@@ -177,6 +177,12 @@ const MainPage: React.FunctionComponent = () => {
   };
   return (
     <Fragment>
+      {handleLoad()}
+      {state.busyMessage && (
+        <LoadingPage state={state} handlers={handlers} classes={classes} />
+      )}
+      {!state.busyMessage && (
+        <Fragment>
       <NavBar state={state} handlers={handlers} classes={classes} />
       <Container>
         <Typography variant="h3">AuthorizationPage</Typography>
@@ -186,18 +192,22 @@ const MainPage: React.FunctionComponent = () => {
           classes={classes}
         />
         <Typography variant="h3">SelectionPage</Typography>
-        <SelectionPage state={state} handlers={handlers} classes={classes} />
+            <SelectionPage
+              state={state}
+              handlers={handlers}
+              classes={classes}
+            />
         <Typography variant="h3">ExportPage</Typography>
         <ExportPage state={state} handlers={handlers} classes={classes} />
         <Typography variant="h3">SuccessPage</Typography>
         <SuccessPage state={state} handlers={handlers} classes={classes} />
-        <Typography variant="h3">LoadingPage</Typography>
-        <LoadingPage state={state} handlers={handlers} classes={classes} />
         <PrivacyPolicy />
       </Container>
       {
         //TODO: Add logic to control when each item is displayed
       }
+    </Fragment>
+      )}
     </Fragment>
   );
 };

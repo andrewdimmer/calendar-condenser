@@ -12,8 +12,7 @@ const SelectionPage: React.FunctionComponent<Props> = ({
 }) => {
   return (
     <Fragment>
-      {
-        <List>
+      {/*<List>
           {state.calendars.map((item: any, i: number) => {
             console.log(i);
 
@@ -32,18 +31,20 @@ const SelectionPage: React.FunctionComponent<Props> = ({
               </Fragment>
             );
           })}
+        </List>*/}
 
-          <Button
-            onClick={() => {
-              handlers.handleChangeStage(3);
-            }}
-          >
-            Next
-          </Button>
+      <Button
+        size="large"
+        color="primary"
+        variant="contained"
+        onClick={() => {
+          handlers.handleChangeStage(3);
+        }}
+      >
+        Next
+      </Button>
 
-          <br />
-        </List>
-      }
+      <br />
     </Fragment>
   );
 };

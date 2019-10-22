@@ -26,7 +26,7 @@ const ExportPage: React.FunctionComponent<Props> = ({
         size="large"
         onClick={function() {
           handlers.handleExport(calendarName);
-          handlers.handleChangeStage(4);
+          handlers.handleChangeStage(3);
         }}
       >
         Export

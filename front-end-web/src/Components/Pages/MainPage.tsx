@@ -140,19 +140,19 @@ const MainPage: React.FunctionComponent = () => {
             setState(userTokenState);
             getUserCalendars(userTokenFromCookie)
               .then(calendarList => {
-                if (calendarList) {
-                  setTimeout(() => {
-                    const calendarState: State = {
-                      busyMessage: "",
-                      notification: state.notification,
-                      userToken: userTokenFromCookie,
-                      calendars: calendarList,
-                      selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
-                      stage: 1
-                    };
-                    setState(calendarState);
-                  }, 1000);
-                } else {
+                // if (calendarList) {
+                setTimeout(() => {
+                  const calendarState: State = {
+                    busyMessage: "",
+                    notification: state.notification,
+                    userToken: userTokenFromCookie,
+                    calendars: calendarList,
+                    selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
+                    stage: 1
+                  };
+                  setState(calendarState);
+                }, 1000);
+                /* } else {
                   setTimeout(() => {
                     document.cookie = "userToken=";
                     const calendarErrorState: State = {
@@ -169,7 +169,7 @@ const MainPage: React.FunctionComponent = () => {
                     };
                     setState(calendarErrorState);
                   }, 1000);
-                }
+                }*/
               })
               .catch(err => {
                 console.log(err);

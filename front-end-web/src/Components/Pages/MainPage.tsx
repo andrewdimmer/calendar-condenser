@@ -15,6 +15,7 @@ import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
 import { AuthorizationPage, ExportPage, SelectionPage, SuccessPage } from "./";
 import LoadingPage from "./LoadingPage";
+import { styles } from "../../Styles";
 
 /**
  * TODO: Add Documentation
@@ -28,7 +29,17 @@ const MainPage: React.FunctionComponent = () => {
     stage: 0,
     selectedCalendars: null
   };
-  const [state, setState] = React.useState(initialState);
+  const [
+    {
+      busyMessage,
+      notification,
+      userToken,
+      calendars,
+      selectedCalendars,
+      stage
+    },
+    setState
+  ] = React.useState(initialState);
   const [loaded, setLoaded] = React.useState(false);
 
   // TODO: Add better documentation
@@ -40,8 +51,8 @@ const MainPage: React.FunctionComponent = () => {
   const handleLogout = (): void => {
     document.cookie = "userToken=";
     const newState: State = {
-      busyMessage: state.busyMessage,
-      notification: state.notification,
+      busyMessage,
+      notification,
       userToken: "",
       calendars: null,
       selectedCalendars: null,
@@ -58,14 +69,14 @@ const MainPage: React.FunctionComponent = () => {
     // MAYBE: Move all of the code below into onLoad?
     const gettingAuthState: State = {
       busyMessage: "Getting Auth Token...",
-      notification: state.notification,
-      userToken: state.userToken,
-      calendars: state.calendars,
-      selectedCalendars: state.selectedCalendars,
-      stage: state.stage
+      notification,
+      userToken,
+      calendars,
+      selectedCalendars,
+      stage
     };
     setState(gettingAuthState);
-    getAuthToken(state.userToken)
+    getAuthToken(userToken)
       .then(url => {
         console.log(url);
         window.open(url.data, "_self");
@@ -78,26 +89,27 @@ const MainPage: React.FunctionComponent = () => {
 
   // TODO: Add documentation
   const handleSelect = (index: number) => {
-    if (state.selectedCalendars) {
-      const selected = state.selectedCalendars.splice(0, 0);
+    if (selectedCalendars) {
+      const selected = selectedCalendars.splice(0, 0);
       selected[index] = !selected[index];
       const newState: State = {
-        busyMessage: state.busyMessage,
-        notification: state.notification,
-        userToken: state.userToken,
-        calendars: state.calendars,
+        busyMessage,
+        notification,
+        userToken,
+        calendars,
         selectedCalendars: selected,
-        stage: state.stage
+        stage
       };
       setState(newState);
     } else {
+      // MAYBE: Should this be different?
       const selectErrorState: State = {
-        busyMessage: state.busyMessage,
-        notification: state.notification,
-        userToken: state.userToken,
-        calendars: state.calendars,
-        selectedCalendars: state.selectedCalendars,
-        stage: state.stage
+        busyMessage,
+        notification,
+        userToken,
+        calendars,
+        selectedCalendars,
+        stage
       };
       setState(selectErrorState);
     }
@@ -121,21 +133,21 @@ const MainPage: React.FunctionComponent = () => {
         if (userTokenFromCookie) {
           const loadingAuthState: State = {
             busyMessage: "Loading User Token...",
-            notification: state.notification,
+            notification,
             userToken: userTokenFromCookie,
-            calendars: state.calendars,
-            selectedCalendars: state.selectedCalendars,
-            stage: state.stage
+            calendars,
+            selectedCalendars,
+            stage
           };
           setState(loadingAuthState);
           setTimeout(() => {
             const userTokenState: State = {
               busyMessage: "Getting Calendar List...",
-              notification: state.notification,
+              notification,
               userToken: userTokenFromCookie,
-              calendars: state.calendars,
-              selectedCalendars: state.selectedCalendars,
-              stage: state.stage
+              calendars,
+              selectedCalendars,
+              stage
             };
             setState(userTokenState);
             getUserCalendars(userTokenFromCookie)
@@ -144,7 +156,7 @@ const MainPage: React.FunctionComponent = () => {
                 setTimeout(() => {
                   const calendarState: State = {
                     busyMessage: "",
-                    notification: state.notification,
+                    notification,
                     userToken: userTokenFromCookie,
                     calendars: calendarList,
                     selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
@@ -179,11 +191,11 @@ const MainPage: React.FunctionComponent = () => {
         } else {
           const notLoadingAnymoreState: State = {
             busyMessage: "",
-            notification: state.notification,
-            userToken: state.userToken,
-            calendars: state.calendars,
-            selectedCalendars: state.selectedCalendars,
-            stage: state.stage
+            notification,
+            userToken,
+            calendars,
+            selectedCalendars,
+            stage
           };
           setState(notLoadingAnymoreState);
           // TODO: Write a function to pick up where the user
@@ -194,11 +206,11 @@ const MainPage: React.FunctionComponent = () => {
 
   const handleChangeStage = (stage: number) => {
     const newStageState: State = {
-      busyMessage: state.busyMessage,
-      notification: state.notification,
-      userToken: state.userToken,
-      calendars: state.calendars,
-      selectedCalendars: state.selectedCalendars,
+      busyMessage,
+      notification,
+      userToken,
+      calendars,
+      selectedCalendars,
       stage
     };
     setState(newStageState);
@@ -212,26 +224,40 @@ const MainPage: React.FunctionComponent = () => {
     handleSelect
   };
 
-  const styles = makeStyles((theme: Theme) =>
-    createStyles({
-      topMargined: {
-        marginTop: theme.spacing(2)
-      }
-    })
-  );
-
   const classes = styles();
   return (
     <Fragment>
       {handleLoad()}
-      {state.busyMessage && (
-        <LoadingPage state={state} handlers={handlers} classes={classes} />
+      {busyMessage && (
+        <LoadingPage
+          state={{
+            busyMessage,
+            notification,
+            userToken,
+            calendars,
+            selectedCalendars,
+            stage
+          }}
+          handlers={handlers}
+          classes={classes}
+        />
       )}
-      {!state.busyMessage && (
+      {!busyMessage && (
         <Fragment>
-          <NavBar state={state} handlers={handlers} classes={classes} />
+          <NavBar
+            state={{
+              busyMessage,
+              notification,
+              userToken,
+              calendars,
+              selectedCalendars,
+              stage
+            }}
+            handlers={handlers}
+            classes={classes}
+          />
           <Container className={classes.topMargined}>
-            <Stepper activeStep={state.stage}>
+            <Stepper activeStep={stage}>
               <Step>
                 <StepLabel>Authorize Access</StepLabel>
               </Step>
@@ -242,39 +268,60 @@ const MainPage: React.FunctionComponent = () => {
                 <StepLabel>Export and Share</StepLabel>
               </Step>
             </Stepper>
-            {state.stage === 0 && (
+            {stage === 0 && (
               <Fragment>
                 <Typography variant="h3">Authorization</Typography>
                 <AuthorizationPage
-                  state={state}
+                  state={{
+                    busyMessage,
+                    notification,
+                    userToken,
+                    calendars,
+                    selectedCalendars,
+                    stage
+                  }}
                   handlers={handlers}
                   classes={classes}
                 />
               </Fragment>
             )}
-            {state.stage === 1 && (
+            {stage === 1 && (
               <Fragment>
                 <Typography variant="h3">Selection</Typography>
                 <SelectionPage
-                  state={state}
+                  state={{
+                    busyMessage,
+                    notification,
+                    userToken,
+                    calendars,
+                    selectedCalendars,
+                    stage
+                  }}
                   handlers={handlers}
                   classes={classes}
                 />
               </Fragment>
             )}
-            {state.stage === 2 && (
+            {stage === 2 && (
               <Fragment>
                 <Typography variant="h3">Export</Typography>
                 <ExportPage
-                  state={state}
-                  handlers={handlers}
                   classes={classes}
+                  handleExport={handleExport}
+                  handleChangeStage={handleChangeStage}
                 />
               </Fragment>
             )}
-            {state.stage === 3 && (
+            {stage === 3 && (
               <SuccessPage
-                state={state}
+                state={{
+                  busyMessage,
+                  notification,
+                  userToken,
+                  calendars,
+                  selectedCalendars,
+                  stage
+                }}
                 handlers={handlers}
                 classes={classes}
               />

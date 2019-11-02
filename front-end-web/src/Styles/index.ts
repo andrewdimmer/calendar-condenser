@@ -1,5 +1,6 @@
 import { makeStyles, createStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core";
+import { THEME } from "./theme";
 
 export const styles = makeStyles((theme: Theme) =>
   createStyles({
@@ -14,3 +15,5 @@ export const styles = makeStyles((theme: Theme) =>
     }
   })
 );
+
+export const theme = THEME;

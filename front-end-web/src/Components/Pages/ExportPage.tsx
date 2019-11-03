@@ -7,10 +7,16 @@ import { Button, TextField } from "@material-ui/core";
  */
 let calendarName: string = "";
 
-const ExportPage: React.FunctionComponent<Props> = ({
-  state,
-  handlers,
-  classes
+declare interface ExportProps {
+  classes: any;
+  handleExport: (calendarName: string) => void;
+  handleChangeStage: (stage: number) => void;
+}
+
+const ExportPage: React.FunctionComponent<ExportProps> = ({
+  classes,
+  handleExport,
+  handleChangeStage
 }) => {
   return (
     <Fragment>
@@ -25,8 +31,8 @@ const ExportPage: React.FunctionComponent<Props> = ({
         color="primary"
         size="large"
         onClick={function() {
-          handlers.handleExport(calendarName);
-          handlers.handleChangeStage(3);
+          handleExport(calendarName);
+          handleChangeStage(3);
         }}
       >
         Export

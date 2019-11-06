@@ -1,8 +1,9 @@
 import {
   createExportCalendar,
-  getAuthToken,
-  getUserCalendars
+  getAuthUrl,
+  getUserCalendars,
+  getAuthToken
 } from "./googleScripts";
 
 // A central location to get all functions from!
-export { getAuthToken, getUserCalendars, createExportCalendar };
+export { getAuthUrl, getAuthToken, getUserCalendars, createExportCalendar };

@@ -4,15 +4,15 @@
 <html>
   <script>
     const url = window.location.href;
-    const tokenStartIndex = url.indexOf("?code=") + 6;
-    const tokenStopIndex = url.indexOf("&scope=");
+    const codeStartIndex = url.indexOf("?code=") + 6;
+    const codeStopIndex = url.indexOf("&scope=");
     console.log(url);
-    if (tokenStartIndex > 0 && tokenStopIndex > 0) {
+    if (codeStartIndex > 0 && codeStopIndex > 0) {
       const date = new Date();
       date.setDate(date.getDate() + 1);
-      const token = url.substring(tokenStartIndex, tokenStopIndex);
-      document.cookie = `userToken=${token}; expires=${date.toString()}`;
-      console.log(token);
+      const code = url.substring(codeStartIndex, codeStopIndex);
+      document.cookie = `oauth=${code}; expires=${date.toString()}`;
+      console.log(code);
     }
     window.open("../", "_self");
   </script>

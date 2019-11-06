@@ -87,7 +87,8 @@ const MainPage: React.FunctionComponent = () => {
   // TODO: Add documentation
   const handleSelect = (index: number) => {
     if (selectedCalendars) {
-      const selected = selectedCalendars.splice(0, 0);
+      const selected = selectedCalendars.splice(0);
+      console.log(selected);
       selected[index] = !selected[index];
       const newState: State = {
         busyMessage,
@@ -222,39 +223,43 @@ const MainPage: React.FunctionComponent = () => {
       setState(userTokenState);
       getUserCalendars(oauthToken)
         .then(calendarList => {
-          if (calendarList) {
+          if (calendarList && calendarList.items) {
             setTimeout(() => {
-              const calendarState: State = {
-                busyMessage: "",
-                notification,
-                userToken: oauthToken,
-                calendars: calendarList,
-                selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE
-                stage: 1
-              };
-              setState(calendarState);
+              if (calendarList.items) {
+                const calendarState: State = {
+                  busyMessage: "",
+                  notification,
+                  userToken: oauthToken,
+                  calendars: calendarList,
+                  selectedCalendars: calendarList.items.map(() => false, []),
+                  stage: 1
+                };
+                setState(calendarState);
+              } else {
+                console.log("Yike! This should never happen!");
+              }
             }, 1000);
           } else {
-            setTimeout(() => {
-              const calendarErrorState: State = {
-                busyMessage: "",
-                notification: {
-                  message:
-                    "Unable to get calendars. Please logout and try re-authorizing.",
-                  open: true
-                },
-                userToken: oauthToken,
-                calendars: null,
-                selectedCalendars: null,
-                stage: 1
-              };
-              setState(calendarErrorState);
-            }, 1000);
+            throw new Error("No CalendarList items returned!");
           }
         })
         .catch(err => {
           console.log(err);
-          // apiError(err);     // Need to add err handler here
+          setTimeout(() => {
+            const calendarErrorState: State = {
+              busyMessage: "",
+              notification: {
+                message:
+                  "Unable to get calendars. Please logout and try re-authorizing.",
+                open: true
+              },
+              userToken: oauthToken,
+              calendars: null,
+              selectedCalendars: null,
+              stage: 0
+            };
+            setState(calendarErrorState);
+          }, 1000);
         });
     }, 1000);
   };

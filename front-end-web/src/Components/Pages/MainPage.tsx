@@ -120,8 +120,8 @@ const MainPage: React.FunctionComponent = () => {
   // TODO: Add documentation
   const handleLoad = () => {
     if (!loaded) {
+      setLoaded(true);
       setTimeout(() => {
-        setLoaded(true);
         const cookie = document.cookie;
         console.log("cookie", cookie);
         const oauthFromCookie = cookie.substr(cookie.indexOf("oauth=") + 6);
@@ -137,7 +137,7 @@ const MainPage: React.FunctionComponent = () => {
           setState(loadingAuthState);
           if (oauthFromCookie.indexOf("1/") === 0) {
             console.log("Found oauth code ", oauthFromCookie);
-            handleGetCalendars(userToken);
+            handleGetCalendars(oauthFromCookie);
           } else if (oauthFromCookie.indexOf("4/") === 0) {
             console.log("Found oauth code ", oauthFromCookie);
             getAuthToken(
@@ -185,7 +185,7 @@ const MainPage: React.FunctionComponent = () => {
               userToken: "",
               calendars: null,
               selectedCalendars: null,
-              stage: 1
+              stage: 0
             };
             setState(tokenErrorState);
           }

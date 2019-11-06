@@ -45,7 +45,7 @@ export function getAuthToken(
   return ky
     .post(
       "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_token",
-      { body: JSON.stringify({ localhost, oauthCode }), retry: 1 }
+      { body: JSON.stringify({ localhost, oauthCode }) }
     )
     .then(tokens => {
       const tokenText = tokens

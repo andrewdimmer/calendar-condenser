@@ -140,13 +140,29 @@ const MainPage: React.FunctionComponent = () => {
             handleGetCalendars(userToken);
           } else if (oauthFromCookie.indexOf("4/") === 0) {
             console.log("Found oauth code ", oauthFromCookie);
-            getAuthToken(oauthFromCookie)
+            getAuthToken(
+              oauthFromCookie,
+              window.location.href.indexOf("localhost") >= 0
+            )
               .then(tokens => {
-                console.log("Returned tokens");
-                if (tokens && tokens.refresh_token) {
-                  document.cookie = `oauth=${tokens.refresh_token}`;
-                  handleGetCalendars(tokens.refresh_token);
+                let tokenObject = JSON.parse(tokens);
+                console.log("tokenObject", tokenObject);
+                if (tokenObject && tokenObject.refresh_token) {
+                  document.cookie = `oauth=${tokenObject.refresh_token}`;
+                  handleGetCalendars(tokenObject.refresh_token);
                 } else {
+                  const noRefreshTokenState: State = {
+                    busyMessage: "",
+                    notification: {
+                      message: "No refesh token found.",
+                      open: true
+                    },
+                    userToken,
+                    calendars,
+                    selectedCalendars,
+                    stage
+                  };
+                  setState(noRefreshTokenState);
                   throw new Error("No refresh token");
                 }
               })
@@ -155,7 +171,10 @@ const MainPage: React.FunctionComponent = () => {
                 document.cookie = "oauth=";
               });
           } else {
-            console.log("Found oauth access token ", oauthFromCookie);
+            console.log("Unknown Token: ", oauthFromCookie);
+            console.log(
+              "Likely the account is already authorized, or this is an access token."
+            );
             const tokenErrorState: State = {
               busyMessage: "",
               notification: {
@@ -217,7 +236,6 @@ const MainPage: React.FunctionComponent = () => {
             }, 1000);
           } else {
             setTimeout(() => {
-              document.cookie = "oauth=";
               const calendarErrorState: State = {
                 busyMessage: "",
                 notification: {

@@ -6,22 +6,7 @@ import { google } from "googleapis";
 export const getAuthURL = functions.https.onRequest((request, response) => {
   response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: Make more secure later!
   try {
-    console.log("body", request.body);
-    console.log("body type:", typeof request.body);
-    let localhost;
-    try {
-      localhost = JSON.parse(request.body).localhost;
-    } catch (err) {
-      console.log(err);
-      localhost = null;
-    }
-    const oauth2Client = new google.auth.OAuth2(
-      functions.config().oauth.client_id,
-      functions.config().oauth.client_secret,
-      localhost
-        ? "http://localhost:3000/auth.html"
-        : "https://calendar-condenser-gcp.firebaseapp.com/auth.html"
-    );
+    const oauth2Client = getOauth2Client(request.body);
 
     const scopes = ["https://www.googleapis.com/auth/calendar"];
 
@@ -44,24 +29,40 @@ export const getAuthURL = functions.https.onRequest((request, response) => {
 /**
  * getToken
  * Gets an OAuth Token from an OAuth Code
- * Built by hand becuase Google's API was broken.
  */
 export const getToken = functions.https.onRequest(async (request, response) => {
   response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: Make more secure later!
   try {
-    /*const oauth2Client = new google.auth.OAuth2(
-    functions.config().oauth.client_id,
-    functions.config().oauth.client_secret,
-    "https://calendar-condenser-gcp.firebaseapp.com/auth.html"
-  );
-
-  const { tokens } = await oauth2Client.getToken(
-    
-  );*/
-    console.log(request.baseUrl);
-    response.send(`Not yet getting tokens!`);
+    const oauth2Client = getOauth2Client(request.body);
+    let oauthCode;
+    try {
+      oauthCode = JSON.parse(request.body).oauthCode;
+    } catch (err) {
+      console.log(err);
+      oauthCode = "";
+    }
+    const { tokens } = await oauth2Client.getToken(oauthCode);
+    console.log(JSON.stringify(tokens));
+    response.send(JSON.stringify(tokens));
   } catch (err) {
     console.log(err);
     response.send("Unable to get tokens at this time. Please try again later!");
   }
 });
+
+export const getOauth2Client = (body: string) => {
+  let localhost;
+  try {
+    localhost = JSON.parse(body).localhost;
+  } catch (err) {
+    console.log(err);
+    localhost = null;
+  }
+  return new google.auth.OAuth2(
+    functions.config().oauth.client_id,
+    functions.config().oauth.client_secret,
+    localhost
+      ? "http://localhost:3000/auth.html"
+      : "https://calendar-condenser-gcp.firebaseapp.com/auth.html"
+  );
+};

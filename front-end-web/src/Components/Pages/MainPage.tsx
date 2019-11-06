@@ -1,21 +1,18 @@
 import {
   Container,
-  createStyles,
-  makeStyles,
   Step,
   StepLabel,
   Stepper,
-  Theme,
   Typography
 } from "@material-ui/core";
 import React, { Fragment } from "react";
 import { Handlers, State } from "../../@Types";
 import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
+import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
 import { AuthorizationPage, ExportPage, SelectionPage, SuccessPage } from "./";
 import LoadingPage from "./LoadingPage";
-import { styles } from "../../Styles";
 
 /**
  * TODO: Add Documentation
@@ -76,10 +73,10 @@ const MainPage: React.FunctionComponent = () => {
       stage
     };
     setState(gettingAuthState);
-    getAuthToken(userToken)
+    getAuthUrl(userToken, window.location.href.indexOf("localhost") >= 0)
       .then(url => {
         console.log(url);
-        window.open(url.data, "_self");
+        window.open(url, "_self");
       })
       .catch(err => {
         console.log(err);
@@ -132,7 +129,7 @@ const MainPage: React.FunctionComponent = () => {
           const loadingAuthState: State = {
             busyMessage: "Loading User Token...",
             notification,
-            userToken: userTokenFromCookie,
+            userToken,
             calendars,
             selectedCalendars,
             stage
@@ -140,7 +137,7 @@ const MainPage: React.FunctionComponent = () => {
           setState(loadingAuthState);
           if (oauthFromCookie.indexOf("1/") === 0) {
             console.log("Found oauth code ", oauthFromCookie);
-            handleGetCalendars(state.userToken);
+            handleGetCalendars(userToken);
           } else if (oauthFromCookie.indexOf("4/") === 0) {
             console.log("Found oauth code ", oauthFromCookie);
             getAuthToken(oauthFromCookie)
@@ -197,11 +194,11 @@ const MainPage: React.FunctionComponent = () => {
     setTimeout(() => {
       const userTokenState: State = {
         busyMessage: "Getting Calendar List...",
-        notification: state.notification,
+        notification,
         userToken: oauthToken,
-        calendars: state.calendars,
-        selectedCalendars: state.selectedCalendars,
-        stage: state.stage
+        calendars,
+        selectedCalendars,
+        stage
       };
       setState(userTokenState);
       getUserCalendars(oauthToken)
@@ -210,7 +207,7 @@ const MainPage: React.FunctionComponent = () => {
             setTimeout(() => {
               const calendarState: State = {
                 busyMessage: "",
-                notification: state.notification,
+                notification,
                 userToken: oauthToken,
                 calendars: calendarList,
                 selectedCalendars: [false].fill(false, 0, 100), // TODO: ADD MAP FUNCTION HERE

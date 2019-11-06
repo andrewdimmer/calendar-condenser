@@ -13,7 +13,6 @@ import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
 import { AuthorizationPage, ExportPage, SelectionPage, SuccessPage } from "./";
 import LoadingPage from "./LoadingPage";
-import { styles } from "../../Styles";
 
 /**
  * TODO: Add Documentation

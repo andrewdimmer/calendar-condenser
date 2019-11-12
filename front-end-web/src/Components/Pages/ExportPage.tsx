@@ -31,7 +31,7 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         size="large"
         onClick={function() {
           handleExport(calendarName);
-          handleChangeStage(3);
+          handleChangeStage(4);
         }}
       >
         Export

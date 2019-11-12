@@ -12,26 +12,35 @@ const SelectionPage: React.FunctionComponent<Props> = ({
 }) => {
   return (
     <Fragment>
-      {/*<List>
-          {state.calendars.map((item: any, i: number) => {
-            console.log(i);
-
-            return (
-              <Fragment key={i}>
+      {
+        <List>
+          {state.calendars &&
+            state.calendars.items &&
+            state.calendars.items.map((item, index) => {
+              return (
                 <ListItem
+                  key={index}
                   button
                   onClick={() => {
-                    handlers.handleSelect(i);
+                    handlers.handleSelect(index);
                   }}
                 >
-                  <Checkbox checked={state.selectedCalendars[i]} />
+                  <Checkbox
+                    checked={
+                      state.selectedCalendars && state.selectedCalendars[index]
+                        ? state.selectedCalendars[index]
+                        : false
+                    }
+                  />
 
-                  {state.calendars[i].summary}
+                  {state.calendars && state.calendars.items
+                    ? state.calendars.items[index].summary
+                    : ""}
                 </ListItem>
-              </Fragment>
-            );
-          })}
-        </List>*/}
+              );
+            })}
+        </List>
+      }
 
       <Button
         size="large"

@@ -25,8 +25,7 @@ const LoginPage: React.FunctionComponent<Props> = ({
     signInFlow: "popup",
     signInSuccessUrl: "/signedIn",
     //Email as only provider
-    signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
-    signInSuccessWithAuthResult: () => handlers.handleChangeStage(1)
+    signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID]
   };
 
   //MAYBE: Remove if not needed

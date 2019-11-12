@@ -28,11 +28,25 @@ export function getAuthToken(userToken: string): Promise<any> {
  */
 export function getUserCalendars(
   userToken: string
-): Promise<calendar_v3.Resource$Calendarlist | null> {
+): Promise<calendar_v3.Schema$CalendarList | null> {
   //TODO
-  return new Promise((resolve, reject) => {
-    resolve(null);
-  });
+  return ky
+    .post(
+      "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_calendar_list",
+      { body: userToken }
+    )
+    .then(response => {
+      return response
+        .json()
+        .then((data: any) => {
+          console.log(data);
+          return data.data;
+        })
+        .catch((err: any) => {
+          console.log(err);
+          return null;
+        });
+    });
 }
 
 /**
@@ -40,7 +54,7 @@ export function getUserCalendars(
  */
 export function createExportCalendar(
   userToken: string,
-  calendars: calendar_v3.Resource$Calendarlist,
+  calendars: calendar_v3.Schema$CalendarList,
   name: string
 ): Promise<boolean> {
   //TODO

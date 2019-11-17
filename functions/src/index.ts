@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import { getAuthURL, getToken } from "./authHandlers";
 import { getUser } from "./databaseHandler";
+import { getCalendarList } from "./calendarListHandlers";
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -15,6 +16,7 @@ export const get_auth_url = getAuthURL;
 export const get_token = getToken;
 
 // Calendar List fuctions
+export const get_calendar_list = getCalendarList;
 
 //Database functions
 export const get_user = getUser;

@@ -11,7 +11,13 @@ import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
-import { AuthorizationPage, ExportPage, SelectionPage, SuccessPage } from "./";
+import {
+  LoginPage,
+  AuthorizationPage,
+  ExportPage,
+  SelectionPage,
+  SuccessPage
+} from "./";
 import LoadingPage from "./LoadingPage";
 
 /**
@@ -319,6 +325,9 @@ const MainPage: React.FunctionComponent = () => {
           <Container className={classes.topMargined}>
             <Stepper activeStep={stage}>
               <Step>
+                <StepLabel>Log In to Calendar Condenser</StepLabel>
+              </Step>
+              <Step>
                 <StepLabel>Authorize Access</StepLabel>
               </Step>
               <Step>
@@ -329,6 +338,23 @@ const MainPage: React.FunctionComponent = () => {
               </Step>
             </Stepper>
             {stage === 0 && (
+              <Fragment>
+                <Typography variant="h3">Login</Typography>
+                <LoginPage
+                  state={{
+                    busyMessage,
+                    notification,
+                    userToken,
+                    calendars,
+                    selectedCalendars,
+                    stage
+                  }}
+                  handlers={handlers}
+                  classes={classes}
+                />
+              </Fragment>
+            )}
+            {stage === 1 && (
               <Fragment>
                 <Typography variant="h3">Authorization</Typography>
                 <AuthorizationPage
@@ -345,7 +371,7 @@ const MainPage: React.FunctionComponent = () => {
                 />
               </Fragment>
             )}
-            {stage === 1 && (
+            {stage === 2 && (
               <Fragment>
                 <Typography variant="h3">Selection</Typography>
                 <SelectionPage
@@ -362,7 +388,7 @@ const MainPage: React.FunctionComponent = () => {
                 />
               </Fragment>
             )}
-            {stage === 2 && (
+            {stage === 3 && (
               <Fragment>
                 <Typography variant="h3">Export</Typography>
                 <ExportPage
@@ -372,7 +398,7 @@ const MainPage: React.FunctionComponent = () => {
                 />
               </Fragment>
             )}
-            {stage === 3 && (
+            {stage === 4 && (
               <SuccessPage
                 state={{
                   busyMessage,

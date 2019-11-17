@@ -47,7 +47,7 @@ const SelectionPage: React.FunctionComponent<Props> = ({
         color="primary"
         variant="contained"
         onClick={() => {
-          handlers.handleChangeStage(2);
+          handlers.handleChangeStage(3);
         }}
       >
         Next

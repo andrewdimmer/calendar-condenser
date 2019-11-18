@@ -12,6 +12,29 @@ export const styles = makeStyles((theme: Theme) =>
     },
     topMargined: {
       marginTop: theme.spacing(2)
+    },
+    button: {
+      margin: theme.spacing(2)
+    },
+    loadingContainer: {
+      width: "100vw",
+      height: "100vh",
+      textAlign: "center"
+    },
+    loadingContent: {
+      // TODO: Add Style Here to Center it Vertically
+    },
+    loadingCircle: {
+      margin: "40px"
+    },
+    root: {
+      flexGrow: 1
+    },
+    menuButton: {
+      marginRight: theme.spacing(2)
+    },
+    title: {
+      flexGrow: 1
     }
   })
 );

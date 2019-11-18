@@ -341,12 +341,6 @@ const MainPage: React.FunctionComponent = () => {
             )}
             {stage === 3 && (
               <Fragment>
-                <Typography variant="h3">Authorization</Typography>
-                <AuthorizationPage handleAuth={handleAuth} classes={classes} />
-              </Fragment>
-            )}
-            {stage === 3 && (
-              <Fragment>
                 <Typography variant="h3">Selection</Typography>
                 <SelectionPage
                   calendars={calendars}

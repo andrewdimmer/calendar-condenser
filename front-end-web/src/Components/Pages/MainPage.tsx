@@ -1,11 +1,24 @@
-import { Container, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
+import {
+  Container,
+  Step,
+  StepLabel,
+  Stepper,
+  Typography
+} from "@material-ui/core";
 import React, { Fragment } from "react";
-import { Handlers, State } from "../../@Types";
+import { State } from "../../@Types";
 import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
-import { AuthorizationPage, ExportPage, HomePage, LoginPage, SelectionPage, SuccessPage } from "./";
+import {
+  AuthorizationPage,
+  ExportPage,
+  HomePage,
+  LoginPage,
+  SelectionPage,
+  SuccessPage
+} from "./";
 import LoadingPage from "./LoadingPage";
 
 /**
@@ -270,23 +283,12 @@ const MainPage: React.FunctionComponent = () => {
     setState(newStageState);
   };
 
-  const handlers: Handlers = {
-    handleAuth,
-    handleChangeStage,
-    handleExport,
-    handleLogout,
-    handleSelect
-  };
-
   const classes = styles();
   return (
     <Fragment>
       {handleLoad()}
       {busyMessage && (
-        <LoadingPage
-          busyMessage={busyMessage}
-          classes={classes}
-        />
+        <LoadingPage busyMessage={busyMessage} classes={classes} />
       )}
       {!busyMessage && (
         <Fragment>
@@ -297,7 +299,7 @@ const MainPage: React.FunctionComponent = () => {
           />
           <Container className={classes.topMargined}>
             <Stepper activeStep={stage}>
-            <Step>
+              <Step>
                 <StepLabel>Home</StepLabel>
               </Step>
               <Step>
@@ -334,21 +336,18 @@ const MainPage: React.FunctionComponent = () => {
             {stage === 2 && (
               <Fragment>
                 <Typography variant="h3">Authorization</Typography>
-                <AuthorizationPage
-                handleAuth={handleAuth}
-                  classes={classes}
-                />
+                <AuthorizationPage handleAuth={handleAuth} classes={classes} />
               </Fragment>
             )}
             {stage === 3 && (
               <Fragment>
                 <Typography variant="h3">Selection</Typography>
                 <SelectionPage
-                calendars={calendars}
-                handleSelect={handleSelect}
-                selectedCalendars={selectedCalendars}
-                handleChangeStage={handleChangeStage}
-                classes={classes}
+                  calendars={calendars}
+                  handleSelect={handleSelect}
+                  selectedCalendars={selectedCalendars}
+                  handleChangeStage={handleChangeStage}
+                  classes={classes}
                 />
               </Fragment>
             )}
@@ -362,11 +361,7 @@ const MainPage: React.FunctionComponent = () => {
                 />
               </Fragment>
             )}
-            {stage === 5 && (
-              <SuccessPage
-                classes={classes}
-              />
-            )}
+            {stage === 5 && <SuccessPage classes={classes} />}
             <br />
             <PrivacyPolicy />
           </Container>

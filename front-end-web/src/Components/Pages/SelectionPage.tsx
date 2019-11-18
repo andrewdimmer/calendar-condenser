@@ -1,7 +1,6 @@
-import { Checkbox, List, ListItem, Button } from "@material-ui/core";
-import React, { Fragment } from "react";
-import { Props } from "../../@Types";
+import { Button, Checkbox, List, ListItem } from "@material-ui/core";
 import { calendar_v3 } from "googleapis";
+import React, { Fragment } from "react";
 declare interface SelectionProps {
   classes: any;
   calendars: calendar_v3.Schema$CalendarList | null;

@@ -1,7 +1,5 @@
-import React, { Fragment } from "react";
-import { Props } from "../../@Types";
-import { makeStyles } from "@material-ui/styles";
 import { Button, Typography } from "@material-ui/core";
+import React, { Fragment } from "react";
 
 declare interface AuthorizationProps {
   classes: any;

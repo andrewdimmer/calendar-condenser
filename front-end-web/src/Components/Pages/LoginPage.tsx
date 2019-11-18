@@ -1,9 +1,7 @@
-import React, { Fragment } from "react";
-import { Props } from "../../@Types";
-import { makeStyles } from "@material-ui/styles";
 import firebase from "firebase";
-import firebaseApp from "../../scripts/firebaseConfig";
+import React, { Fragment } from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import firebaseApp from "../../scripts/firebaseConfig";
 /**
  * TODO: Add Documentation
  */

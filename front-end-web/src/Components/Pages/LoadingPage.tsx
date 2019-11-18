@@ -1,12 +1,5 @@
-import {
-  CircularProgress,
-  Typography,
-  makeStyles,
-  Theme,
-  createStyles
-} from "@material-ui/core";
+import { CircularProgress, Typography } from "@material-ui/core";
 import React from "react";
-import { Props } from "../../@Types";
 
 declare interface LoadingProps {
   classes: any;

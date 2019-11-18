@@ -1,6 +1,5 @@
+import { Button, Typography } from "@material-ui/core";
 import React, { Fragment } from "react";
-import { Props } from "../../@Types";
-import { Typography, Button } from "@material-ui/core";
 /**
  * TODO: Add Documentation
  */

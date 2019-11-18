@@ -1,24 +1,11 @@
-import {
-  Container,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography
-} from "@material-ui/core";
+import { Container, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
 import React, { Fragment } from "react";
 import { Handlers, State } from "../../@Types";
 import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
-import {
-  LoginPage,
-  AuthorizationPage,
-  ExportPage,
-  SelectionPage,
-  SuccessPage,
-  HomePage
-} from "./";
+import { AuthorizationPage, ExportPage, HomePage, LoginPage, SelectionPage, SuccessPage } from "./";
 import LoadingPage from "./LoadingPage";
 
 /**
@@ -239,7 +226,7 @@ const MainPage: React.FunctionComponent = () => {
                   userToken: oauthToken,
                   calendars: calendarList,
                   selectedCalendars: calendarList.items.map(() => false, []),
-                  stage: 2
+                  stage: 3
                 };
                 setState(calendarState);
               } else {

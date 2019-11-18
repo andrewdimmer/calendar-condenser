@@ -13,17 +13,14 @@ const HomePage: React.FunctionComponent<HomeProps> = ({
 }) => {
   return (
     <Fragment>
-      <Typography variant="h4">
-        {" "}
+      <Typography variant="h4"> What is Calendar Condenser?</Typography>
+      <Typography variant="body1">
         Users with many calendars will be able to make them into one calendar to
         share with others, and control how much a person will be able to see.
         This will allow users to keep things organized and keep track of events
         and scheduling. Primary users will more than likely be Google Calendar
-        users and users with multiple calendars.{" "}
+        users and users with multiple calendars.
       </Typography>
-      {
-        //TODO
-      }
       <Button
         variant="contained"
         color="primary"

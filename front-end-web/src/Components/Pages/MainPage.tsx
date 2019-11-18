@@ -1,12 +1,19 @@
 import { Container, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
 import React, { Fragment } from "react";
-import { Handlers, State } from "../../@Types";
+import { State } from "../../@Types";
 import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
-import { AuthorizationPage, ExportPage, HomePage, LoginPage, SelectionPage, SuccessPage } from "./";
-import LoadingPage from "./LoadingPage";
+import {
+  AuthorizationPage,
+  ExportPage,
+  HomePage,
+  LoginPage,
+  SelectionPage,
+  SuccessPage,
+  LoadingPage
+} from "./";
 
 /**
  * TODO: Add Documentation
@@ -270,14 +277,6 @@ const MainPage: React.FunctionComponent = () => {
     setState(newStageState);
   };
 
-  const handlers: Handlers = {
-    handleAuth,
-    handleChangeStage,
-    handleExport,
-    handleLogout,
-    handleSelect
-  };
-
   const classes = styles();
   return (
     <Fragment>
@@ -298,6 +297,9 @@ const MainPage: React.FunctionComponent = () => {
           <Container className={classes.topMargined}>
             <Stepper activeStep={stage}>
             <Step>
+                <StepLabel>Home</StepLabel>
+              </Step>
+              <Step>
                 <StepLabel>Home</StepLabel>
               </Step>
               <Step>
@@ -338,6 +340,12 @@ const MainPage: React.FunctionComponent = () => {
                 handleAuth={handleAuth}
                   classes={classes}
                 />
+              </Fragment>
+            )}
+            {stage === 3 && (
+              <Fragment>
+                <Typography variant="h3">Authorization</Typography>
+                <AuthorizationPage handleAuth={handleAuth} classes={classes} />
               </Fragment>
             )}
             {stage === 3 && (

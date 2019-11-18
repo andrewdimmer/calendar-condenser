@@ -8,37 +8,22 @@ import {
 import React from "react";
 import { Props } from "../../@Types";
 
-export const styles = makeStyles((theme: Theme) =>
-  createStyles({
-    loadingContainer: {
-      width: "100vw",
-      height: "100vh",
-      textAlign: "center"
-    },
-    loadingContent: {
-      // TODO: Add Style Here to Center it Vertically
-    },
-    loadingCircle: {
-      margin: "40px"
-    }
-  })
-);
-
+declare interface LoadingProps {
+  classes: any;
+  busyMessage: string;
+}
 /**
  * TODO: Add Documentation
  */
-const Loading: React.FunctionComponent<Props> = ({
-  state,
-  handlers,
+const Loading: React.FunctionComponent<LoadingProps> = ({
+  busyMessage,
   classes
 }) => {
-  const classes2 = styles();
-
   return (
-    <div className={classes2.loadingContainer}>
-      <div className={classes2.loadingContent}>
-        <CircularProgress color="primary" className={classes2.loadingCircle} />
-        <Typography variant="h3">{state.busyMessage}</Typography>
+    <div className={classes.loadingContainer}>
+      <div className={classes.loadingContent}>
+        <CircularProgress color="primary" className={classes.loadingCircle} />
+        <Typography variant="h3">{busyMessage}</Typography>
       </div>
     </div>
   );

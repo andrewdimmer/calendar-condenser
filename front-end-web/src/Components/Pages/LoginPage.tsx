@@ -7,20 +7,15 @@ import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 /**
  * TODO: Add Documentation
  */
-const LoginPage: React.FunctionComponent<Props> = ({
-  state,
-  handlers,
-  classes
-}) => {
-  const useStyles = makeStyles(theme => ({
-    button: {
-      margin: "8px"
-    },
-    input: {
-      display: "none"
-    }
-  }));
 
+declare interface LoginProps {
+  classes: any;
+  handleChangeStage: (stage: number) => void;
+}
+const LoginPage: React.FunctionComponent<LoginProps> = ({
+  classes,
+  handleChangeStage
+}) => {
   const uiConfig = {
     signInFlow: "popup",
     signInSuccessUrl: "/signedIn",
@@ -42,11 +37,9 @@ const LoginPage: React.FunctionComponent<Props> = ({
     });
   } */
 
-  const classes2 = useStyles();
-
   firebaseApp.auth().onAuthStateChanged(function(user) {
     if (user) {
-      handlers.handleChangeStage(1); //If we have a logged-in user, go to Calendar Auth page
+      handleChangeStage(2); //If we have a logged-in user, go to Calendar Auth page
     }
   });
 

@@ -4,12 +4,10 @@ import { Typography } from "@material-ui/core";
 /**
  * TODO: Add Documentation
  */
-
-const SuccessPage: React.FunctionComponent<Props> = ({
-  state,
-  handlers,
-  classes
-}) => {
+declare interface SuccessProps {
+  classes: any;
+}
+const SuccessPage: React.FunctionComponent<SuccessProps> = ({ classes }) => {
   return (
     <Fragment>
       <Typography variant="h4"> Success! </Typography>

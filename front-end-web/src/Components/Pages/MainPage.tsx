@@ -16,7 +16,8 @@ import {
   AuthorizationPage,
   ExportPage,
   SelectionPage,
-  SuccessPage
+  SuccessPage,
+  HomePage
 } from "./";
 import LoadingPage from "./LoadingPage";
 
@@ -238,7 +239,7 @@ const MainPage: React.FunctionComponent = () => {
                   userToken: oauthToken,
                   calendars: calendarList,
                   selectedCalendars: calendarList.items.map(() => false, []),
-                  stage: 1
+                  stage: 2
                 };
                 setState(calendarState);
               } else {
@@ -296,15 +297,7 @@ const MainPage: React.FunctionComponent = () => {
       {handleLoad()}
       {busyMessage && (
         <LoadingPage
-          state={{
-            busyMessage,
-            notification,
-            userToken,
-            calendars,
-            selectedCalendars,
-            stage
-          }}
-          handlers={handlers}
+          busyMessage={busyMessage}
           classes={classes}
         />
       )}
@@ -324,6 +317,9 @@ const MainPage: React.FunctionComponent = () => {
           />
           <Container className={classes.topMargined}>
             <Stepper activeStep={stage}>
+            <Step>
+                <StepLabel>Home</StepLabel>
+              </Step>
               <Step>
                 <StepLabel>Log In to Calendar Condenser</StepLabel>
               </Step>
@@ -340,7 +336,7 @@ const MainPage: React.FunctionComponent = () => {
             {stage === 0 && (
               <Fragment>
                 <Typography variant="h3">Login</Typography>
-                <LoginPage
+                <HomePage
                   state={{
                     busyMessage,
                     notification,
@@ -356,8 +352,8 @@ const MainPage: React.FunctionComponent = () => {
             )}
             {stage === 1 && (
               <Fragment>
-                <Typography variant="h3">Authorization</Typography>
-                <AuthorizationPage
+                <Typography variant="h3">Login</Typography>
+                <LoginPage
                   state={{
                     busyMessage,
                     notification,
@@ -373,22 +369,23 @@ const MainPage: React.FunctionComponent = () => {
             )}
             {stage === 2 && (
               <Fragment>
-                <Typography variant="h3">Selection</Typography>
-                <SelectionPage
-                  state={{
-                    busyMessage,
-                    notification,
-                    userToken,
-                    calendars,
-                    selectedCalendars,
-                    stage
-                  }}
-                  handlers={handlers}
+                <Typography variant="h3">Authorization</Typography>
+                <AuthorizationPage
+                handleAuth={handleAuth}
                   classes={classes}
                 />
               </Fragment>
             )}
             {stage === 3 && (
+              <Fragment>
+                <Typography variant="h3">Selection</Typography>
+                <SelectionPage
+              
+                  classes={classes}
+                />
+              </Fragment>
+            )}
+            {stage === 4 && (
               <Fragment>
                 <Typography variant="h3">Export</Typography>
                 <ExportPage
@@ -398,17 +395,8 @@ const MainPage: React.FunctionComponent = () => {
                 />
               </Fragment>
             )}
-            {stage === 4 && (
+            {stage === 5 && (
               <SuccessPage
-                state={{
-                  busyMessage,
-                  notification,
-                  userToken,
-                  calendars,
-                  selectedCalendars,
-                  stage
-                }}
-                handlers={handlers}
                 classes={classes}
               />
             )}

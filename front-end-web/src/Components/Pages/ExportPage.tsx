@@ -29,9 +29,10 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         variant="contained"
         color="primary"
         size="large"
+        className={classes.button}
         onClick={function() {
           handleExport(calendarName);
-          handleChangeStage(4);
+          handleChangeStage(5);
         }}
       >
         Export

@@ -1,40 +1,49 @@
 import { Checkbox, List, ListItem, Button } from "@material-ui/core";
 import React, { Fragment } from "react";
 import { Props } from "../../@Types";
-
+import { calendar_v3 } from "googleapis";
+declare interface SelectionProps {
+  classes: any;
+  calendars: calendar_v3.Schema$CalendarList | null;
+  handleSelect: (index: number) => void;
+  selectedCalendars: boolean[] | null;
+  handleChangeStage: (stage: number) => void;
+}
 /**
  * TODO: Add Documentation
  */
-const SelectionPage: React.FunctionComponent<Props> = ({
-  state,
-  handlers,
-  classes
+const SelectionPage: React.FunctionComponent<SelectionProps> = ({
+  classes,
+  calendars,
+  handleSelect,
+  selectedCalendars,
+  handleChangeStage
 }) => {
   return (
     <Fragment>
       {
         <List>
-          {state.calendars &&
-            state.calendars.items &&
-            state.calendars.items.map((item, index) => {
+          {calendars &&
+            calendars.items &&
+            calendars.items.map((item, index) => {
               return (
                 <ListItem
                   key={index}
                   button
                   onClick={() => {
-                    handlers.handleSelect(index);
+                    handleSelect(index);
                   }}
                 >
                   <Checkbox
                     checked={
-                      state.selectedCalendars && state.selectedCalendars[index]
-                        ? state.selectedCalendars[index]
+                      selectedCalendars && selectedCalendars[index]
+                        ? selectedCalendars[index]
                         : false
                     }
                   />
 
-                  {state.calendars && state.calendars.items
-                    ? state.calendars.items[index].summary
+                  {calendars && calendars.items
+                    ? calendars.items[index].summary
                     : ""}
                 </ListItem>
               );
@@ -46,8 +55,9 @@ const SelectionPage: React.FunctionComponent<Props> = ({
         size="large"
         color="primary"
         variant="contained"
+        className={classes.button}
         onClick={() => {
-          handlers.handleChangeStage(3);
+          handleChangeStage(4);
         }}
       >
         Next

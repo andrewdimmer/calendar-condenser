@@ -23,7 +23,7 @@ export const getUser = functions.https.onRequest((request, response) => {
             response.send("Unable to get user");
           });
       } else {
-        response.send(JSON.stringify(user));
+        response.send(JSON.stringify(user.data()));
       }
     })
     .catch(err => {

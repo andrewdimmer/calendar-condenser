@@ -17,9 +17,9 @@ import {
   HomePage,
   LoginPage,
   SelectionPage,
-  SuccessPage
+  SuccessPage,
+  LoadingPage
 } from "./";
-import LoadingPage from "./LoadingPage";
 
 /**
  * TODO: Add Documentation
@@ -317,7 +317,7 @@ const MainPage: React.FunctionComponent = () => {
             </Stepper>
             {stage === 0 && (
               <Fragment>
-                <Typography variant="h3">Login</Typography>
+                <Typography variant="h3">Home</Typography>
                 <HomePage
                   handleChangeStage={handleChangeStage}
                   classes={classes}

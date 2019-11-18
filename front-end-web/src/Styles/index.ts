@@ -26,6 +26,15 @@ export const styles = makeStyles((theme: Theme) =>
     },
     loadingCircle: {
       margin: "40px"
+    },
+    root: {
+      flexGrow: 1
+    },
+    menuButton: {
+      marginRight: theme.spacing(2)
+    },
+    title: {
+      flexGrow: 1
     }
   })
 );

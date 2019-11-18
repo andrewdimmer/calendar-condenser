@@ -304,15 +304,8 @@ const MainPage: React.FunctionComponent = () => {
       {!busyMessage && (
         <Fragment>
           <NavBar
-            state={{
-              busyMessage,
-              notification,
-              userToken,
-              calendars,
-              selectedCalendars,
-              stage
-            }}
-            handlers={handlers}
+            userToken={userToken}
+            handleLogout={handleLogout}
             classes={classes}
           />
           <Container className={classes.topMargined}>
@@ -337,15 +330,7 @@ const MainPage: React.FunctionComponent = () => {
               <Fragment>
                 <Typography variant="h3">Login</Typography>
                 <HomePage
-                  state={{
-                    busyMessage,
-                    notification,
-                    userToken,
-                    calendars,
-                    selectedCalendars,
-                    stage
-                  }}
-                  handlers={handlers}
+                  handleChangeStage={handleChangeStage}
                   classes={classes}
                 />
               </Fragment>
@@ -354,15 +339,7 @@ const MainPage: React.FunctionComponent = () => {
               <Fragment>
                 <Typography variant="h3">Login</Typography>
                 <LoginPage
-                  state={{
-                    busyMessage,
-                    notification,
-                    userToken,
-                    calendars,
-                    selectedCalendars,
-                    stage
-                  }}
-                  handlers={handlers}
+                  handleChangeStage={handleChangeStage}
                   classes={classes}
                 />
               </Fragment>
@@ -380,8 +357,11 @@ const MainPage: React.FunctionComponent = () => {
               <Fragment>
                 <Typography variant="h3">Selection</Typography>
                 <SelectionPage
-              
-                  classes={classes}
+                calendars={calendars}
+                handleSelect={handleSelect}
+                selectedCalendars={selectedCalendars}
+                handleChangeStage={handleChangeStage}
+                classes={classes}
                 />
               </Fragment>
             )}

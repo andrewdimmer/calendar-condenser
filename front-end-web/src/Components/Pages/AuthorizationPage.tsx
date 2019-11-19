@@ -1,25 +1,18 @@
-import React, { Fragment } from "react";
-import { Props } from "../../@Types";
-import { makeStyles } from "@material-ui/styles";
 import { Button, Typography } from "@material-ui/core";
+import React, { Fragment } from "react";
+
+declare interface AuthorizationProps {
+  classes: any;
+  handleAuth: () => void;
+}
 
 /**
  * TODO: Add Documentation
  */
-const AuthorizationPage: React.FunctionComponent<Props> = ({
-  state,
-  handlers,
-  classes
+const AuthorizationPage: React.FunctionComponent<AuthorizationProps> = ({
+  classes,
+  handleAuth
 }) => {
-  const useStyles = makeStyles(theme => ({
-    button: {
-      margin: "8px"
-    },
-    input: {
-      display: "none"
-    }
-  }));
-  const classes2 = useStyles();
   return (
     <Fragment>
       <Typography>
@@ -29,8 +22,8 @@ const AuthorizationPage: React.FunctionComponent<Props> = ({
         variant="contained"
         size="large"
         color="primary"
-        className={classes2.button}
-        onClick={handlers.handleAuth}
+        className={classes.button}
+        onClick={handleAuth}
       >
         Login and Authorize
       </Button>

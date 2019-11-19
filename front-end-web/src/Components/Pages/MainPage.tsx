@@ -6,13 +6,20 @@ import {
   Typography
 } from "@material-ui/core";
 import React, { Fragment } from "react";
-import { Handlers, State } from "../../@Types";
+import { State } from "../../@Types";
 import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
-import { AuthorizationPage, ExportPage, SelectionPage, SuccessPage } from "./";
-import LoadingPage from "./LoadingPage";
+import {
+  AuthorizationPage,
+  ExportPage,
+  HomePage,
+  LoginPage,
+  SelectionPage,
+  SuccessPage,
+  LoadingPage
+} from "./";
 
 /**
  * TODO: Add Documentation
@@ -232,7 +239,7 @@ const MainPage: React.FunctionComponent = () => {
                   userToken: oauthToken,
                   calendars: calendarList,
                   selectedCalendars: calendarList.items.map(() => false, []),
-                  stage: 1
+                  stage: 3
                 };
                 setState(calendarState);
               } else {
@@ -276,48 +283,28 @@ const MainPage: React.FunctionComponent = () => {
     setState(newStageState);
   };
 
-  const handlers: Handlers = {
-    handleAuth,
-    handleChangeStage,
-    handleExport,
-    handleLogout,
-    handleSelect
-  };
-
   const classes = styles();
   return (
     <Fragment>
       {handleLoad()}
       {busyMessage && (
-        <LoadingPage
-          state={{
-            busyMessage,
-            notification,
-            userToken,
-            calendars,
-            selectedCalendars,
-            stage
-          }}
-          handlers={handlers}
-          classes={classes}
-        />
+        <LoadingPage busyMessage={busyMessage} classes={classes} />
       )}
       {!busyMessage && (
         <Fragment>
           <NavBar
-            state={{
-              busyMessage,
-              notification,
-              userToken,
-              calendars,
-              selectedCalendars,
-              stage
-            }}
-            handlers={handlers}
+            userToken={userToken}
+            handleLogout={handleLogout}
             classes={classes}
           />
           <Container className={classes.topMargined}>
             <Stepper activeStep={stage}>
+              <Step>
+                <StepLabel>Home</StepLabel>
+              </Step>
+              <Step>
+                <StepLabel>Log In to Calendar Condenser</StepLabel>
+              </Step>
               <Step>
                 <StepLabel>Authorize Access</StepLabel>
               </Step>
@@ -330,39 +317,41 @@ const MainPage: React.FunctionComponent = () => {
             </Stepper>
             {stage === 0 && (
               <Fragment>
-                <Typography variant="h3">Authorization</Typography>
-                <AuthorizationPage
-                  state={{
-                    busyMessage,
-                    notification,
-                    userToken,
-                    calendars,
-                    selectedCalendars,
-                    stage
-                  }}
-                  handlers={handlers}
+                <Typography variant="h3">Home</Typography>
+                <HomePage
+                  handleChangeStage={handleChangeStage}
                   classes={classes}
                 />
               </Fragment>
             )}
             {stage === 1 && (
               <Fragment>
-                <Typography variant="h3">Selection</Typography>
-                <SelectionPage
-                  state={{
-                    busyMessage,
-                    notification,
-                    userToken,
-                    calendars,
-                    selectedCalendars,
-                    stage
-                  }}
-                  handlers={handlers}
+                <Typography variant="h3">Login</Typography>
+                <LoginPage
+                  handleChangeStage={handleChangeStage}
                   classes={classes}
                 />
               </Fragment>
             )}
             {stage === 2 && (
+              <Fragment>
+                <Typography variant="h3">Authorization</Typography>
+                <AuthorizationPage handleAuth={handleAuth} classes={classes} />
+              </Fragment>
+            )}
+            {stage === 3 && (
+              <Fragment>
+                <Typography variant="h3">Selection</Typography>
+                <SelectionPage
+                  calendars={calendars}
+                  handleSelect={handleSelect}
+                  selectedCalendars={selectedCalendars}
+                  handleChangeStage={handleChangeStage}
+                  classes={classes}
+                />
+              </Fragment>
+            )}
+            {stage === 4 && (
               <Fragment>
                 <Typography variant="h3">Export</Typography>
                 <ExportPage
@@ -372,20 +361,7 @@ const MainPage: React.FunctionComponent = () => {
                 />
               </Fragment>
             )}
-            {stage === 3 && (
-              <SuccessPage
-                state={{
-                  busyMessage,
-                  notification,
-                  userToken,
-                  calendars,
-                  selectedCalendars,
-                  stage
-                }}
-                handlers={handlers}
-                classes={classes}
-              />
-            )}
+            {stage === 5 && <SuccessPage classes={classes} />}
             <br />
             <PrivacyPolicy />
           </Container>

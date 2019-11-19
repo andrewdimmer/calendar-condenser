@@ -1,5 +1,5 @@
-import React, { Fragment } from "react";
 import { Button, TextField } from "@material-ui/core";
+import React, { Fragment } from "react";
 
 /**
  * TODO: Add Documentation
@@ -29,9 +29,10 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         variant="contained"
         color="primary"
         size="large"
+        className={classes.button}
         onClick={function() {
           handleExport(calendarName);
-          handleChangeStage(3);
+          handleChangeStage(5);
         }}
       >
         Export

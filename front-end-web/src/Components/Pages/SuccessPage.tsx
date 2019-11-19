@@ -1,15 +1,12 @@
-import React, { Fragment } from "react";
-import { Props } from "../../@Types";
 import { Typography } from "@material-ui/core";
+import React, { Fragment } from "react";
 /**
  * TODO: Add Documentation
  */
-
-const SuccessPage: React.FunctionComponent<Props> = ({
-  state,
-  handlers,
-  classes
-}) => {
+declare interface SuccessProps {
+  classes: any;
+}
+const SuccessPage: React.FunctionComponent<SuccessProps> = ({ classes }) => {
   return (
     <Fragment>
       <Typography variant="h4"> Success! </Typography>

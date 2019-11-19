@@ -10,7 +10,11 @@ export const getUser = functions.https.onRequest((request, response) => {
     .then(user => {
       if (!user.exists) {
         const data = {
-          userid: ""
+          userid: "",
+          name: "",
+          email: "",
+          profilepicture: "",
+          password: ""
         };
         db.collection("users")
           .doc(userid)

@@ -16,7 +16,7 @@ const LoginPage: React.FunctionComponent<LoginProps> = ({
 }) => {
   const uiConfig = {
     signInFlow: "popup",
-    signInSuccessUrl: "/signedIn",
+    signInSuccessUrl: "",
     //Email as only provider
     signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID]
   };

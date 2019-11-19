@@ -134,10 +134,10 @@ const MainPage: React.FunctionComponent = () => {
       if (window.location.href.indexOf("?mode=select") > -1) {
         handleChangeStage(1);
       } else {
-        if (firebase.auth().currentUser) {
+        const currentUser = firebase.auth().currentUser;
+        if (currentUser) {
           handleChangeStage(2);
-          //TODO: fix console debug to print currentUser without typescript error
-          //console.log(getUserInfo(firebase.auth().currentUser));
+          console.log(getUserInfo(currentUser.uid));
         }
         setTimeout(() => {
           const cookie = document.cookie;

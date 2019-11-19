@@ -153,10 +153,10 @@ const MainPage: React.FunctionComponent = () => {
             console.log(getUserInfo(currentUser.uid));
           }
 
-          const cookie = document.cookie;
-          console.log("cookie", cookie);
-          const oauthFromCookie = cookie.substr(cookie.indexOf("oauth=") + 6);
-          if (oauthFromCookie) {
+          const url = window.location.href;
+          if (url.indexOf("auth") > -1) {
+            const codeStartIndex = url.indexOf("?code=") + 6;
+            const codeStopIndex = url.indexOf("&scope=");
             const loadingAuthState: State = {
               busyMessage: "Loading User Token...",
               notification,
@@ -166,13 +166,14 @@ const MainPage: React.FunctionComponent = () => {
               stage
             };
             setState(loadingAuthState);
-            if (oauthFromCookie.indexOf("1/") === 0) {
-              console.log("Found oauth code ", oauthFromCookie);
-              handleGetCalendars(oauthFromCookie);
-            } else if (oauthFromCookie.indexOf("4/") === 0) {
-              console.log("Found oauth code ", oauthFromCookie);
+            const oauthFromURL = url.substring(codeStartIndex, codeStopIndex);
+            if (oauthFromURL.indexOf("1/") === 0) {
+              console.log("Found oauth code ", oauthFromURL);
+              handleGetCalendars(oauthFromURL);
+            } else if (oauthFromURL.indexOf("4/") === 0) {
+              console.log("Found oauth code ", oauthFromURL);
               getAuthToken(
-                oauthFromCookie,
+                oauthFromURL,
                 window.location.href.indexOf("localhost") >= 0
               )
                 .then(tokens => {
@@ -203,7 +204,7 @@ const MainPage: React.FunctionComponent = () => {
                   document.cookie = "oauth=";
                 });
             } else {
-              console.log("Unknown Token: ", oauthFromCookie);
+              console.log("Unknown Token: ", oauthFromURL);
               console.log(
                 "Likely the account is already authorized, or this is an access token."
               );

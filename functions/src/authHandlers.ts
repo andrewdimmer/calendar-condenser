@@ -62,7 +62,7 @@ export const getOauth2Client = (body: string) => {
     functions.config().oauth.client_id,
     functions.config().oauth.client_secret,
     localhost
-      ? "http://localhost:3000/auth.html"
-      : "https://calendar-condenser-gcp.firebaseapp.com/auth.html"
+      ? "http://localhost:3000/auth"
+      : "https://calendar-condenser-gcp.firebaseapp.com/auth"
   );
 };

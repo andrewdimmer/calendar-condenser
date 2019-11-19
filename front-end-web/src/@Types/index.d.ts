@@ -7,7 +7,7 @@ export declare interface State {
   busyMessage: string;
   notification: { message: string; open: boolean };
   userToken: string;
-  calendars: calendar_v3.Resource$Calendarlist | null;
+  calendars: calendar_v3.Schema$CalendarList | null;
   stage: stage;
   selectedCalendars: boolean[] | null;
 }

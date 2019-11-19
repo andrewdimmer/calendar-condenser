@@ -10,13 +10,20 @@ export const getUser = functions.https.onRequest((request, response) => {
     .then(user => {
       if (!user.exists) {
         const data = {
-          userid: "",
-          name: "",
-          email: "",
-          profilepicture: "",
-          password: ""
+          userid,
+          accounts:[],
+          exports:{}
         };
-        db.collection("users")
+        db.collection("keys")
+          .doc(userid)
+          .set({accounts:{}})
+          .then(() => {
+            console.log("keys")
+          })
+          .catch(err => {
+            console.log(err);
+          });
+          db.collection("users")
           .doc(userid)
           .set(data)
           .then(() => {
@@ -27,7 +34,7 @@ export const getUser = functions.https.onRequest((request, response) => {
             response.send("Unable to get user");
           });
       } else {
-        response.send(JSON.stringify(user));
+        response.send(JSON.stringify(user.data()));
       }
     })
     .catch(err => {

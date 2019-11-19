@@ -56,6 +56,7 @@ const MainPage: React.FunctionComponent = () => {
    */
   const handleLogout = (): void => {
     document.cookie = "oauth=";
+    firebase.auth().signOut();
     const newState: State = {
       busyMessage,
       notification,
@@ -131,15 +132,23 @@ const MainPage: React.FunctionComponent = () => {
   const handleLoad = () => {
     if (!loaded) {
       setLoaded(true);
-      if (window.location.href.indexOf("?mode=select") > -1) {
-        handleChangeStage(1);
-      } else {
-        const currentUser = firebase.auth().currentUser;
-        if (currentUser) {
-          handleChangeStage(2);
-          console.log(getUserInfo(currentUser.uid));
-        }
-        setTimeout(() => {
+      setTimeout(() => {
+        if (window.location.href.indexOf("?mode=select") > -1) {
+          const loginSelectState: State = {
+            busyMessage: "",
+            notification,
+            userToken,
+            calendars,
+            selectedCalendars,
+            stage: 1
+          };
+          setState(loginSelectState);
+        } else {
+          const currentUser = firebase.auth().currentUser;
+          if (currentUser) {
+            console.log(getUserInfo(currentUser.uid));
+          }
+
           const cookie = document.cookie;
           console.log("cookie", cookie);
           const oauthFromCookie = cookie.substr(cookie.indexOf("oauth=") + 6);
@@ -214,13 +223,13 @@ const MainPage: React.FunctionComponent = () => {
               userToken,
               calendars,
               selectedCalendars,
-              stage
+              stage: currentUser ? 2 : 0
             };
             setState(notLoadingAnymoreState);
             // TODO: Write a function to pick up where the user
           }
-        }, 2000);
-      }
+        }
+      }, 2000);
     }
   };
 
@@ -274,7 +283,7 @@ const MainPage: React.FunctionComponent = () => {
               userToken: oauthToken,
               calendars: null,
               selectedCalendars: null,
-              stage: 0
+              stage: 2
             };
             setState(calendarErrorState);
           }, 1000);

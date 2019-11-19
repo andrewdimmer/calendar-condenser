@@ -7,11 +7,11 @@ import {
 } from "@material-ui/core";
 import React, { Fragment } from "react";
 import firebase from "firebase";
-import { State } from "../../@Types";
+import { State, notificationTypes } from "../../@Types";
 import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
-import { NavBar } from "../Layouts";
+import { NavBar, NotificationBar } from "../Layouts";
 import { getUserInfo } from "../../scripts/databaseScripts";
 import {
   AuthorizationPage,
@@ -29,7 +29,7 @@ import {
 const MainPage: React.FunctionComponent = () => {
   const initialState: State = {
     busyMessage: "Loading...",
-    notification: { message: "", open: false },
+    notification: { message: "", type: "info", open: false },
     userToken: "",
     calendars: null,
     stage: 0,
@@ -59,7 +59,11 @@ const MainPage: React.FunctionComponent = () => {
     firebase.auth().signOut();
     const newState: State = {
       busyMessage,
-      notification,
+      notification: {
+        message: "Sign Out Successful",
+        type: "success",
+        open: true
+      },
       userToken: "",
       calendars: null,
       selectedCalendars: null,
@@ -182,6 +186,7 @@ const MainPage: React.FunctionComponent = () => {
                       busyMessage: "",
                       notification: {
                         message: "No refesh token found.",
+                        type: "error",
                         open: true
                       },
                       userToken,
@@ -207,6 +212,7 @@ const MainPage: React.FunctionComponent = () => {
                 notification: {
                   message:
                     "Unable to get token. Please logout and try re-authorizing.",
+                  type: "error",
                   open: true
                 },
                 userToken: "",
@@ -255,7 +261,11 @@ const MainPage: React.FunctionComponent = () => {
               if (calendarList.items) {
                 const calendarState: State = {
                   busyMessage: "",
-                  notification,
+                  notification: {
+                    message: "Successfully Retrieved Calendars",
+                    type: "success",
+                    open: true
+                  },
                   userToken: oauthToken,
                   calendars: calendarList,
                   selectedCalendars: calendarList.items.map(() => false, []),
@@ -278,6 +288,7 @@ const MainPage: React.FunctionComponent = () => {
               notification: {
                 message:
                   "Unable to get calendars. Please logout and try re-authorizing.",
+                type: "error",
                 open: true
               },
               userToken: oauthToken,
@@ -303,9 +314,31 @@ const MainPage: React.FunctionComponent = () => {
     setState(newStageState);
   };
 
+  const handleChangeNotification = (newNotification: {
+    message: string;
+    type: keyof typeof notificationTypes;
+    open: boolean;
+  }) => {
+    const newNotificationState: State = {
+      busyMessage,
+      notification: newNotification,
+      userToken,
+      calendars,
+      selectedCalendars,
+      stage
+    };
+    setState(newNotificationState);
+  };
+
   const classes = styles();
   return (
     <Fragment>
+      <NotificationBar
+        message={notification.message}
+        type={notification.type}
+        open={notification.open}
+        update={handleChangeNotification}
+      />
       {handleLoad()}
       {busyMessage && (
         <LoadingPage busyMessage={busyMessage} classes={classes} />

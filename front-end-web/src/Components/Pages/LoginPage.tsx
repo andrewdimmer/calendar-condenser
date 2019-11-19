@@ -2,6 +2,7 @@ import firebase from "firebase";
 import React, { Fragment } from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import firebaseApp from "../../scripts/firebaseConfig";
+import { getUserInfo } from "../../scripts/databaseScripts";
 /**
  * TODO: Add Documentation
  */
@@ -37,6 +38,7 @@ const LoginPage: React.FunctionComponent<LoginProps> = ({
 
   firebaseApp.auth().onAuthStateChanged(function(user) {
     if (user) {
+      console.log(getUserInfo(user.uid));
       handleChangeStage(2); //If we have a logged-in user, go to Calendar Auth page
     }
   });

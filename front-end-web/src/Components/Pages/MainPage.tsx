@@ -6,11 +6,13 @@ import {
   Typography
 } from "@material-ui/core";
 import React, { Fragment } from "react";
+import firebase from "firebase";
 import { State } from "../../@Types";
 import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
 import { NavBar } from "../Layouts";
+import { getUserInfo } from "../../scripts/databaseScripts";
 import {
   AuthorizationPage,
   ExportPage,
@@ -54,6 +56,7 @@ const MainPage: React.FunctionComponent = () => {
    */
   const handleLogout = (): void => {
     document.cookie = "oauth=";
+    firebase.auth().signOut();
     const newState: State = {
       busyMessage,
       notification,
@@ -130,84 +133,101 @@ const MainPage: React.FunctionComponent = () => {
     if (!loaded) {
       setLoaded(true);
       setTimeout(() => {
-        const cookie = document.cookie;
-        console.log("cookie", cookie);
-        const oauthFromCookie = cookie.substr(cookie.indexOf("oauth=") + 6);
-        if (oauthFromCookie) {
-          const loadingAuthState: State = {
-            busyMessage: "Loading User Token...",
-            notification,
-            userToken,
-            calendars,
-            selectedCalendars,
-            stage
-          };
-          setState(loadingAuthState);
-          if (oauthFromCookie.indexOf("1/") === 0) {
-            console.log("Found oauth code ", oauthFromCookie);
-            handleGetCalendars(oauthFromCookie);
-          } else if (oauthFromCookie.indexOf("4/") === 0) {
-            console.log("Found oauth code ", oauthFromCookie);
-            getAuthToken(
-              oauthFromCookie,
-              window.location.href.indexOf("localhost") >= 0
-            )
-              .then(tokens => {
-                let tokenObject = JSON.parse(tokens);
-                console.log("tokenObject", tokenObject);
-                if (tokenObject && tokenObject.refresh_token) {
-                  document.cookie = `oauth=${tokenObject.refresh_token}`;
-                  handleGetCalendars(tokenObject.refresh_token);
-                } else {
-                  const noRefreshTokenState: State = {
-                    busyMessage: "",
-                    notification: {
-                      message: "No refesh token found.",
-                      open: true
-                    },
-                    userToken,
-                    calendars,
-                    selectedCalendars,
-                    stage
-                  };
-                  setState(noRefreshTokenState);
-                  throw new Error("No refresh token");
-                }
-              })
-              .catch(err => {
-                console.log(err);
-                document.cookie = "oauth=";
-              });
-          } else {
-            console.log("Unknown Token: ", oauthFromCookie);
-            console.log(
-              "Likely the account is already authorized, or this is an access token."
-            );
-            const tokenErrorState: State = {
-              busyMessage: "",
-              notification: {
-                message:
-                  "Unable to get token. Please logout and try re-authorizing.",
-                open: true
-              },
-              userToken: "",
-              calendars: null,
-              selectedCalendars: null,
-              stage: 0
-            };
-            setState(tokenErrorState);
-          }
-        } else {
-          const notLoadingAnymoreState: State = {
+        if (window.location.href.indexOf("?mode=select") > -1) {
+          const loginSelectState: State = {
             busyMessage: "",
             notification,
             userToken,
             calendars,
             selectedCalendars,
-            stage
+            stage: 1
           };
-          setState(notLoadingAnymoreState);
-          // TODO: Write a function to pick up where the user
+          setState(loginSelectState);
+        } else {
+          const currentUser = firebase.auth().currentUser;
+          if (currentUser) {
+            console.log(getUserInfo(currentUser.uid));
+          }
+
+          const cookie = document.cookie;
+          console.log("cookie", cookie);
+          const oauthFromCookie = cookie.substr(cookie.indexOf("oauth=") + 6);
+          if (oauthFromCookie) {
+            const loadingAuthState: State = {
+              busyMessage: "Loading User Token...",
+              notification,
+              userToken,
+              calendars,
+              selectedCalendars,
+              stage
+            };
+            setState(loadingAuthState);
+            if (oauthFromCookie.indexOf("1/") === 0) {
+              console.log("Found oauth code ", oauthFromCookie);
+              handleGetCalendars(oauthFromCookie);
+            } else if (oauthFromCookie.indexOf("4/") === 0) {
+              console.log("Found oauth code ", oauthFromCookie);
+              getAuthToken(
+                oauthFromCookie,
+                window.location.href.indexOf("localhost") >= 0
+              )
+                .then(tokens => {
+                  let tokenObject = JSON.parse(tokens);
+                  console.log("tokenObject", tokenObject);
+                  if (tokenObject && tokenObject.refresh_token) {
+                    document.cookie = `oauth=${tokenObject.refresh_token}`;
+                    handleGetCalendars(tokenObject.refresh_token);
+                  } else {
+                    const noRefreshTokenState: State = {
+                      busyMessage: "",
+                      notification: {
+                        message: "No refesh token found.",
+                        open: true
+                      },
+                      userToken,
+                      calendars,
+                      selectedCalendars,
+                      stage
+                    };
+                    setState(noRefreshTokenState);
+                    throw new Error("No refresh token");
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                  document.cookie = "oauth=";
+                });
+            } else {
+              console.log("Unknown Token: ", oauthFromCookie);
+              console.log(
+                "Likely the account is already authorized, or this is an access token."
+              );
+              const tokenErrorState: State = {
+                busyMessage: "",
+                notification: {
+                  message:
+                    "Unable to get token. Please logout and try re-authorizing.",
+                  open: true
+                },
+                userToken: "",
+                calendars: null,
+                selectedCalendars: null,
+                stage: 0
+              };
+              setState(tokenErrorState);
+            }
+          } else {
+            const notLoadingAnymoreState: State = {
+              busyMessage: "",
+              notification,
+              userToken,
+              calendars,
+              selectedCalendars,
+              stage: currentUser ? 2 : 0
+            };
+            setState(notLoadingAnymoreState);
+            // TODO: Write a function to pick up where the user
+          }
         }
       }, 2000);
     }
@@ -263,7 +283,7 @@ const MainPage: React.FunctionComponent = () => {
               userToken: oauthToken,
               calendars: null,
               selectedCalendars: null,
-              stage: 0
+              stage: 2
             };
             setState(calendarErrorState);
           }, 1000);

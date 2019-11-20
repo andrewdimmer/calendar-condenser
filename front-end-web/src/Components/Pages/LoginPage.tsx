@@ -9,7 +9,7 @@ import { getUserInfo } from "../../scripts/databaseScripts";
 
 declare interface LoginProps {
   classes: any;
-  handleChangeStage: (stage: number) => void;
+  handleChangeStage: (newStage: number) => void;
 }
 const LoginPage: React.FunctionComponent<LoginProps> = ({
   classes,

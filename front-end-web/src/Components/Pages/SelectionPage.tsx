@@ -6,7 +6,7 @@ declare interface SelectionProps {
   calendars: calendar_v3.Schema$CalendarList | null;
   handleSelect: (index: number) => void;
   selectedCalendars: boolean[] | null;
-  handleChangeStage: (stage: number) => void;
+  handleChangeStage: (newStage: number) => void;
 }
 /**
  * TODO: Add Documentation

@@ -9,7 +9,7 @@ let calendarName: string = "";
 declare interface ExportProps {
   classes: any;
   handleExport: (calendarName: string) => void;
-  handleChangeStage: (stage: number) => void;
+  handleChangeStage: (newStage: number) => void;
 }
 
 const ExportPage: React.FunctionComponent<ExportProps> = ({

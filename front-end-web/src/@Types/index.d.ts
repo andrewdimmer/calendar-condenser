@@ -12,7 +12,7 @@ export declare interface State {
   };
   userToken: string;
   calendars: calendar_v3.Schema$CalendarList | null;
-  stage: stage;
+  stage: any;
   selectedCalendars: boolean[] | null;
 }
 

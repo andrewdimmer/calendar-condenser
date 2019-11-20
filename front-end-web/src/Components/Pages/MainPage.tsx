@@ -22,6 +22,7 @@ import {
   SuccessPage,
   LoadingPage
 } from "./";
+import { calendar_v3 } from "googleapis";
 
 /**
  * TODO: Add Documentation
@@ -48,6 +49,54 @@ const MainPage: React.FunctionComponent = () => {
   ] = React.useState(initialState);
   const [loaded, setLoaded] = React.useState(false);
 
+  //TODO: Add better documentation
+  /**
+   * handleUpdateState
+   * Updates the react state baed off of the new values,
+   * but keeps all of the values that are not being updated the same.
+   * Also saves parts of the state to a cookie so the user can pick up
+   * where they left off in the event that the page is refreshed or closes.
+   * @param New State (note that it is of type State, but all fields are optional)
+   */
+  const handleUpdateState = ({
+    newBusyMessage,
+    newNotification,
+    newUserToken,
+    newCalendars,
+    newSelectedCalendars,
+    newStage
+  }: {
+    newBusyMessage?: string;
+    newNotification?: {
+      message: string;
+      type: keyof typeof notificationTypes;
+      open: boolean;
+    };
+    newUserToken?: string;
+    newCalendars?: calendar_v3.Schema$CalendarList | null;
+    newSelectedCalendars?: boolean[] | null;
+    newStage?: any;
+  }) => {
+    const newState: State = {
+      busyMessage: newBusyMessage ? newBusyMessage : busyMessage,
+      notification: newNotification ? newNotification : notification,
+      userToken: newUserToken ? newUserToken : userToken,
+      calendars: newCalendars ? newCalendars : calendars,
+      selectedCalendars: newSelectedCalendars
+        ? newSelectedCalendars
+        : selectedCalendars,
+      stage: newStage ? newStage : stage
+    };
+    setState(newState);
+    const cookieState = {
+      busyMessage: newBusyMessage ? newBusyMessage : busyMessage,
+      notification: newNotification ? newNotification : notification,
+      userToken: newUserToken ? newUserToken : userToken,
+      stage: newStage ? newStage : stage
+    };
+    document.cookie = `state=${JSON.stringify(cookieState)}`;
+  };
+
   // TODO: Add better documentation
   /**
    * handleLogout
@@ -56,19 +105,17 @@ const MainPage: React.FunctionComponent = () => {
    */
   const handleLogout = (): void => {
     firebase.auth().signOut();
-    const newState: State = {
-      busyMessage,
-      notification: {
+    handleUpdateState({
+      newNotification: {
         message: "Sign Out Successful",
         type: "success",
         open: true
       },
-      userToken: "",
-      calendars: null,
-      selectedCalendars: null,
-      stage: 0
-    };
-    setState(newState);
+      newUserToken: "",
+      newCalendars: null,
+      newSelectedCalendars: null,
+      newStage: 0
+    });
   };
 
   /**
@@ -76,15 +123,9 @@ const MainPage: React.FunctionComponent = () => {
    * TODO: Add documentation
    */
   const handleAuth = () => {
-    const gettingAuthState: State = {
-      busyMessage: "Getting Auth Token...",
-      notification,
-      userToken,
-      calendars,
-      selectedCalendars,
-      stage
-    };
-    setState(gettingAuthState);
+    handleUpdateState({
+      newBusyMessage: "Getting Auth URL..."
+    });
     getAuthUrl(userToken, window.location.href.indexOf("localhost") >= 0)
       .then(url => {
         console.log(url);
@@ -92,19 +133,14 @@ const MainPage: React.FunctionComponent = () => {
       })
       .catch(err => {
         console.log(err);
-        const gettingAuthState: State = {
-          busyMessage: "Getting Auth Token...",
-          notification: {
+        handleUpdateState({
+          newBusyMessage: "Getting Auth Token...",
+          newNotification: {
             message: "Unable to get authorization url. Please try again later!",
             type: "error",
             open: true
-          },
-          userToken,
-          calendars,
-          selectedCalendars,
-          stage
-        };
-        setState(gettingAuthState);
+          }
+        });
       });
   };
 
@@ -114,26 +150,9 @@ const MainPage: React.FunctionComponent = () => {
       const selected = selectedCalendars.splice(0);
       console.log(selected);
       selected[index] = !selected[index];
-      const newState: State = {
-        busyMessage,
-        notification,
-        userToken,
-        calendars,
-        selectedCalendars: selected,
-        stage
-      };
-      setState(newState);
+      handleUpdateState({ newSelectedCalendars: selected });
     } else {
-      // MAYBE: Should this be different?
-      const selectErrorState: State = {
-        busyMessage,
-        notification,
-        userToken,
-        calendars,
-        selectedCalendars,
-        stage
-      };
-      setState(selectErrorState);
+      // MAYBE: Should something go here?
     }
   };
 
@@ -148,15 +167,7 @@ const MainPage: React.FunctionComponent = () => {
       setLoaded(true);
       setTimeout(() => {
         if (window.location.href.indexOf("?mode=select") > -1) {
-          const loginSelectState: State = {
-            busyMessage: "",
-            notification,
-            userToken,
-            calendars,
-            selectedCalendars,
-            stage: 1
-          };
-          setState(loginSelectState);
+          handleUpdateState({ newBusyMessage: "", newStage: 1 });
         } else {
           const currentUser = firebase.auth().currentUser;
           if (currentUser) {
@@ -167,15 +178,10 @@ const MainPage: React.FunctionComponent = () => {
           if (url.indexOf("auth") > -1) {
             const codeStartIndex = url.indexOf("?code=") + 6;
             const codeStopIndex = url.indexOf("&scope=");
-            const loadingAuthState: State = {
-              busyMessage: "Loading User Token...",
-              notification,
-              userToken: currentUser ? currentUser.uid : "",
-              calendars,
-              selectedCalendars,
-              stage
-            };
-            setState(loadingAuthState);
+            handleUpdateState({
+              newBusyMessage: "Loading User Token...",
+              newUserToken: currentUser ? currentUser.uid : ""
+            });
             const oauthFromURL = url.substring(codeStartIndex, codeStopIndex);
             if (oauthFromURL.indexOf("4/") === 0) {
               getAuthToken(
@@ -187,48 +193,35 @@ const MainPage: React.FunctionComponent = () => {
                   window.location.href = "../";
                 })
                 .catch(() => {
-                  const noRefreshTokenState: State = {
-                    busyMessage: "",
-                    notification: {
+                  handleUpdateState({
+                    newBusyMessage: "",
+                    newNotification: {
                       message:
                         "Unable to get token at this time. Please try again later!",
                       type: "error",
                       open: true
-                    },
-                    userToken,
-                    calendars,
-                    selectedCalendars,
-                    stage
-                  };
-                  setState(noRefreshTokenState);
+                    }
+                  });
                 });
             } else {
-              const tokenErrorState: State = {
-                busyMessage: "",
-                notification: {
+              handleUpdateState({
+                newBusyMessage: "",
+                newNotification: {
                   message:
                     "Unable to get token. This account may already be authorized.",
                   type: "warning",
                   open: true
                 },
-                userToken,
-                calendars: null,
-                selectedCalendars: null,
-                stage: 2
-              };
-              setState(tokenErrorState);
+                newCalendars: null,
+                newSelectedCalendars: null,
+                newStage: 2
+              });
             }
           } else {
-            const notLoadingAnymoreState: State = {
-              busyMessage: "",
-              notification,
-              userToken,
-              calendars,
-              selectedCalendars,
-              stage: currentUser ? 2 : 0
-            };
-            setState(notLoadingAnymoreState);
-            // TODO: Write a function to pick up where the user
+            handleUpdateState({
+              newBusyMessage: "",
+              newStage: currentUser ? 2 : 0
+            });
           }
         }
       }, 2000);
@@ -241,33 +234,25 @@ const MainPage: React.FunctionComponent = () => {
    */
   const handleGetCalendars = (oauthToken: string) => {
     setTimeout(() => {
-      const userTokenState: State = {
-        busyMessage: "Getting Calendar List...",
-        notification,
-        userToken,
-        calendars,
-        selectedCalendars,
-        stage
-      };
-      setState(userTokenState);
+      handleUpdateState({
+        newBusyMessage: "Getting Calendar List..."
+      });
       getUserCalendars(oauthToken)
         .then(calendarList => {
           if (calendarList && calendarList.items) {
             setTimeout(() => {
               if (calendarList.items) {
-                const calendarState: State = {
-                  busyMessage: "",
-                  notification: {
+                handleUpdateState({
+                  newBusyMessage: "",
+                  newNotification: {
                     message: "Successfully Retrieved Calendars",
                     type: "success",
                     open: true
                   },
-                  userToken,
-                  calendars: calendarList,
-                  selectedCalendars: calendarList.items.map(() => false, []),
-                  stage: 3
-                };
-                setState(calendarState);
+                  newCalendars: calendarList,
+                  newSelectedCalendars: calendarList.items.map(() => false, []),
+                  newStage: 3
+                });
               } else {
                 console.log("Yike! This should never happen!");
               }
@@ -298,16 +283,8 @@ const MainPage: React.FunctionComponent = () => {
     }, 1000);
   };
 
-  const handleChangeStage = (stage: number) => {
-    const newStageState: State = {
-      busyMessage,
-      notification,
-      userToken,
-      calendars,
-      selectedCalendars,
-      stage
-    };
-    setState(newStageState);
+  const handleChangeStage = (newStage: number) => {
+    handleUpdateState({ newStage });
   };
 
   const handleChangeNotification = (newNotification: {
@@ -315,15 +292,7 @@ const MainPage: React.FunctionComponent = () => {
     type: keyof typeof notificationTypes;
     open: boolean;
   }) => {
-    const newNotificationState: State = {
-      busyMessage,
-      notification: newNotification,
-      userToken,
-      calendars,
-      selectedCalendars,
-      stage
-    };
-    setState(newNotificationState);
+    handleUpdateState({ newNotification });
   };
 
   const classes = styles();

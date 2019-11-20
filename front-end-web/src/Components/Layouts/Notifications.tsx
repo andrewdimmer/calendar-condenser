@@ -1,5 +1,4 @@
 import {
-  Button,
   IconButton,
   Snackbar,
   SnackbarContent,
@@ -12,8 +11,8 @@ import ErrorIcon from "@material-ui/icons/Error";
 import InfoIcon from "@material-ui/icons/Info";
 import WarningIcon from "@material-ui/icons/Warning";
 import { makeStyles } from "@material-ui/styles";
-import React, { SyntheticEvent } from "react";
 import clsx from "clsx";
+import React, { SyntheticEvent } from "react";
 
 const variantIcon = {
   success: CheckCircleIcon,

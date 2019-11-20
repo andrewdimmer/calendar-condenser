@@ -55,7 +55,6 @@ const MainPage: React.FunctionComponent = () => {
    * Clears the userToken from the state and the cookie.
    */
   const handleLogout = (): void => {
-    document.cookie = "oauth=";
     firebase.auth().signOut();
     const newState: State = {
       busyMessage,
@@ -77,7 +76,6 @@ const MainPage: React.FunctionComponent = () => {
    * TODO: Add documentation
    */
   const handleAuth = () => {
-    // MAYBE: Move all of the code below into onLoad?
     const gettingAuthState: State = {
       busyMessage: "Getting Auth Token...",
       notification,
@@ -94,7 +92,19 @@ const MainPage: React.FunctionComponent = () => {
       })
       .catch(err => {
         console.log(err);
-        // apiError(err);     // Need to add err handler here
+        const gettingAuthState: State = {
+          busyMessage: "Getting Auth Token...",
+          notification: {
+            message: "Unable to get authorization url. Please try again later!",
+            type: "error",
+            open: true
+          },
+          userToken,
+          calendars,
+          selectedCalendars,
+          stage
+        };
+        setState(gettingAuthState);
       });
   };
 
@@ -160,66 +170,51 @@ const MainPage: React.FunctionComponent = () => {
             const loadingAuthState: State = {
               busyMessage: "Loading User Token...",
               notification,
-              userToken,
+              userToken: currentUser ? currentUser.uid : "",
               calendars,
               selectedCalendars,
               stage
             };
             setState(loadingAuthState);
             const oauthFromURL = url.substring(codeStartIndex, codeStopIndex);
-            if (oauthFromURL.indexOf("1/") === 0) {
-              console.log("Found oauth code ", oauthFromURL);
-              handleGetCalendars(oauthFromURL);
-            } else if (oauthFromURL.indexOf("4/") === 0) {
-              console.log("Found oauth code ", oauthFromURL);
+            if (oauthFromURL.indexOf("4/") === 0) {
               getAuthToken(
                 oauthFromURL,
+                currentUser ? currentUser.uid : "",
                 window.location.href.indexOf("localhost") >= 0
               )
-                .then(tokens => {
-                  let tokenObject = JSON.parse(tokens);
-                  console.log("tokenObject", tokenObject);
-                  if (tokenObject && tokenObject.refresh_token) {
-                    document.cookie = `oauth=${tokenObject.refresh_token}`;
-                    handleGetCalendars(tokenObject.refresh_token);
-                  } else {
-                    const noRefreshTokenState: State = {
-                      busyMessage: "",
-                      notification: {
-                        message: "No refesh token found.",
-                        type: "error",
-                        open: true
-                      },
-                      userToken,
-                      calendars,
-                      selectedCalendars,
-                      stage
-                    };
-                    setState(noRefreshTokenState);
-                    throw new Error("No refresh token");
-                  }
+                .then(successMessage => {
+                  window.location.href = "../";
                 })
-                .catch(err => {
-                  console.log(err);
-                  document.cookie = "oauth=";
+                .catch(() => {
+                  const noRefreshTokenState: State = {
+                    busyMessage: "",
+                    notification: {
+                      message:
+                        "Unable to get token at this time. Please try again later!",
+                      type: "error",
+                      open: true
+                    },
+                    userToken,
+                    calendars,
+                    selectedCalendars,
+                    stage
+                  };
+                  setState(noRefreshTokenState);
                 });
             } else {
-              console.log("Unknown Token: ", oauthFromURL);
-              console.log(
-                "Likely the account is already authorized, or this is an access token."
-              );
               const tokenErrorState: State = {
                 busyMessage: "",
                 notification: {
                   message:
-                    "Unable to get token. Please logout and try re-authorizing.",
-                  type: "error",
+                    "Unable to get token. This account may already be authorized.",
+                  type: "warning",
                   open: true
                 },
-                userToken: "",
+                userToken,
                 calendars: null,
                 selectedCalendars: null,
-                stage: 0
+                stage: 2
               };
               setState(tokenErrorState);
             }
@@ -249,7 +244,7 @@ const MainPage: React.FunctionComponent = () => {
       const userTokenState: State = {
         busyMessage: "Getting Calendar List...",
         notification,
-        userToken: oauthToken,
+        userToken,
         calendars,
         selectedCalendars,
         stage
@@ -267,7 +262,7 @@ const MainPage: React.FunctionComponent = () => {
                     type: "success",
                     open: true
                   },
-                  userToken: oauthToken,
+                  userToken,
                   calendars: calendarList,
                   selectedCalendars: calendarList.items.map(() => false, []),
                   stage: 3
@@ -292,7 +287,7 @@ const MainPage: React.FunctionComponent = () => {
                 type: "error",
                 open: true
               },
-              userToken: oauthToken,
+              userToken,
               calendars: null,
               selectedCalendars: null,
               stage: 2

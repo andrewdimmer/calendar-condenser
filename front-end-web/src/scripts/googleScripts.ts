@@ -39,15 +39,17 @@ export function getAuthUrl(
 
 export function getAuthToken(
   oauthCode: string,
+  userId: string,
   localhost: boolean
 ): Promise<string> {
   console.log("Sending oauth code ", oauthCode);
   return ky
     .post(
       "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_token",
-      { body: JSON.stringify({ localhost, oauthCode }) }
+      { body: JSON.stringify({ localhost, oauthCode, userId }) }
     )
     .then(tokens => {
+      console.log("ky success");
       const tokenText = tokens
         .text()
         .then(text => text)
@@ -59,9 +61,10 @@ export function getAuthToken(
       return tokenText;
     })
     .catch(err => {
+      console.log(err);
+      console.log("ky failure");
       return new Promise((resolve, reject) => {
-        console.log(err);
-        resolve("");
+        reject("");
       });
     });
 }

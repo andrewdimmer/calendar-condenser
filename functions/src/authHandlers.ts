@@ -1,5 +1,7 @@
 import * as functions from "firebase-functions";
 import { google } from "googleapis";
+import firebaseapp from "./firebaseConfig";
+import nanoid = require("nanoid");
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -17,12 +19,12 @@ export const getAuthURL = functions.https.onRequest((request, response) => {
       // If you only need one scope you can pass it as a string
       scope: scopes
     });
-    response.send(url);
+    response.status(200).send(url);
   } catch (err) {
     console.log(err);
-    response.send(
-      "Unable to get login URL at this time. Please try again later!"
-    );
+    response
+      .status(500)
+      .send("Unable to get login URL at this time. Please try again later!");
   }
 });
 
@@ -34,19 +36,93 @@ export const getToken = functions.https.onRequest(async (request, response) => {
   response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: Make more secure later!
   try {
     const oauth2Client = getOauth2Client(request.body);
-    let oauthCode;
+    let oauthCode = "",
+      userId = "";
     try {
-      oauthCode = JSON.parse(request.body).oauthCode;
+      const parsed = JSON.parse(request.body);
+      oauthCode = parsed.oauthCode;
+      userId = parsed.userId;
     } catch (err) {
       console.log(err);
-      oauthCode = "";
     }
-    const { tokens } = await oauth2Client.getToken(oauthCode);
-    console.log(JSON.stringify(tokens));
-    response.send(JSON.stringify(tokens));
+    if (userId && oauthCode) {
+      const { tokens } = await oauth2Client.getToken(oauthCode);
+      const { refresh_token } = tokens;
+      firebaseapp
+        .firestore()
+        .collection("users")
+        .doc(userId)
+        .get()
+        .then(userData => {
+          const data = userData.data();
+          if (data) {
+            const label = `Google Calendar Account ${data.accounts.length}`;
+            const accountId = nanoid();
+            data.accounts.push({ accountId, label });
+            firebaseapp
+              .firestore()
+              .collection("users")
+              .doc(userId)
+              .set(data)
+              .then(() => {
+                firebaseapp
+                  .firestore()
+                  .collection("keys")
+                  .doc(userId)
+                  .get()
+                  .then(keyData => {
+                    const data = keyData.data();
+                    if (data) {
+                      data.accounts[accountId] = {
+                        accountId,
+                        refresh_token,
+                        valid: true
+                      };
+                      firebaseapp
+                        .firestore()
+                        .collection("keys")
+                        .doc(userId)
+                        .set(data)
+                        .then(() => {
+                          response
+                            .status(200)
+                            .send("Account Authorized Successfully!");
+                        })
+                        .catch(err => {
+                          console.log(err);
+                          throw new Error(
+                            "Unable to write key to keys collection in the database"
+                          );
+                        });
+                    } else {
+                      throw new Error(
+                        "User's keys do not exist in the database."
+                      );
+                    }
+                  })
+                  .catch(err => {
+                    console.log(err);
+                    throw new Error("User does not exist in the database.");
+                  });
+              })
+              .catch(err => {
+                console.log(err);
+                throw new Error(
+                  "Unable to write label to user collection in the databse"
+                );
+              });
+          } else {
+            throw new Error("User does not exist in the database.");
+          }
+        });
+    } else {
+      throw new Error("Missing either userId or oauthCode");
+    }
   } catch (err) {
     console.log(err);
-    response.send("Unable to get tokens at this time. Please try again later!");
+    response
+      .status(500)
+      .send("Unable to get tokens at this time. Please try again later!");
   }
 });
 

@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import firebase, { User } from "firebase";
 import React, { Fragment } from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import firebaseApp from "../../scripts/firebaseConfig";
@@ -9,11 +9,11 @@ import { getUserInfo } from "../../scripts/databaseScripts";
 
 declare interface LoginProps {
   classes: any;
-  handleChangeStage: (newStage: number) => void;
+  handleLogin: (user: User) => void;
 }
 const LoginPage: React.FunctionComponent<LoginProps> = ({
   classes,
-  handleChangeStage
+  handleLogin
 }) => {
   const uiConfig = {
     signInFlow: "popup",
@@ -38,8 +38,7 @@ const LoginPage: React.FunctionComponent<LoginProps> = ({
 
   firebaseApp.auth().onAuthStateChanged(function(user) {
     if (user) {
-      console.log(getUserInfo(user.uid));
-      handleChangeStage(2); //If we have a logged-in user, go to Calendar Auth page
+      handleLogin(user);
     }
   });
 

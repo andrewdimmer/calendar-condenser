@@ -5,30 +5,28 @@ import {
   Stepper,
   Typography
 } from "@material-ui/core";
-import React, { Fragment } from "react";
 import firebase, { User } from "firebase";
+import React, { Fragment } from "react";
 import {
-  State,
-  notificationTypes,
-  UpdateState,
   CookieState,
-  NotificationMessage
+  NotificationMessage,
+  State,
+  UpdateState
 } from "../../@Types";
-import { getAuthToken, getAuthUrl, getUserCalendars } from "../../scripts";
+import { getAuthToken, getAuthUrl } from "../../scripts";
+import { getUserInfo } from "../../scripts/databaseScripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
 import { NavBar, NotificationBar } from "../Layouts";
-import { getUserInfo } from "../../scripts/databaseScripts";
 import {
   AuthorizationPage,
   ExportPage,
   HomePage,
+  LoadingPage,
   LoginPage,
   SelectionPage,
-  SuccessPage,
-  LoadingPage
+  SuccessPage
 } from "./";
-import { calendar_v3 } from "googleapis";
 
 /**
  * MainPage
@@ -87,15 +85,41 @@ const MainPage: React.FunctionComponent = () => {
       selectedCalendars: newSelectedCalendars
         ? newSelectedCalendars
         : selectedCalendars,
-      stage: newStage ? newStage : stage
+      stage: newStage !== undefined ? newStage : stage
     };
     setState(newState);
     const cookieState: CookieState = {
       notification: newNotification ? newNotification : notification,
-      currentUser: newCurrentUser !== undefined ? newCurrentUser : currentUser,
-      stage: newStage ? newStage : stage
+      currentUserId:
+        newCurrentUser !== undefined
+          ? newCurrentUser
+            ? newCurrentUser.uid
+            : ""
+          : currentUser
+          ? currentUser.uid
+          : "",
+      stage: newStage !== undefined ? newStage : stage
     };
     document.cookie = `state=${JSON.stringify(cookieState)}`;
+  };
+
+  /**
+   * handleLogin
+   * Saves the currentUser and advances to the next page after a firebase login
+   * Note: Refreshed the page, then restores state from cookie.
+   */
+  const handleLogin = (user: User) => {
+    handleUpdateState({
+      newBusyMessage: "Loading...",
+      newNotification: {
+        message: "Successfully Logged In",
+        type: "success",
+        open: true
+      },
+      newCurrentUser: user,
+      newStage: 2
+    });
+    window.location.href = "../";
   };
 
   /**
@@ -106,7 +130,7 @@ const MainPage: React.FunctionComponent = () => {
     firebase.auth().signOut();
     handleUpdateState({
       newNotification: {
-        message: "Sign Out Successful",
+        message: "Successfully Logged Out",
         type: "success",
         open: true
       },
@@ -129,10 +153,7 @@ const MainPage: React.FunctionComponent = () => {
       newBusyMessage: "Getting Auth URL..."
     });
     if (currentUser) {
-      getAuthUrl(
-        currentUser.uid,
-        window.location.href.indexOf("localhost") >= 0
-      )
+      getAuthUrl(window.location.href.indexOf("localhost") >= 0)
         .then(url => {
           window.open(url, "_self");
         })
@@ -205,66 +226,171 @@ const MainPage: React.FunctionComponent = () => {
   const handleLoad = () => {
     if (!loaded) {
       setLoaded(true);
-      /*setTimeout(() => {
-        if (window.location.href.indexOf("?mode=select") > -1) {
+      setTimeout(() => {
+        const url = window.location.href;
+        if (url.indexOf("?mode=select") > -1) {
+          // Just logging in, does not need to restore state from cookie.
           handleUpdateState({ newBusyMessage: "", newStage: 1 });
+        } else if (url.indexOf("auth") > -1) {
+          // Get the refresh token.
+          // Note: Needs to restore from cookie to keep the userId correct.
+          handleRestoreFromCookie(handleProcessAuthToken);
         } else {
-          const currentUser = firebase.auth().currentUser;
-          if (currentUser) {
-            console.log(getUserInfo(currentUser.uid));
-          }
-
-          const url = window.location.href;
-          if (url.indexOf("auth") > -1) {
-            const codeStartIndex = url.indexOf("?code=") + 6;
-            const codeStopIndex = url.indexOf("&scope=");
-            handleUpdateState({
-              newBusyMessage: "Loading User Token...",
-              newUserToken: currentUser ? currentUser.uid : ""
-            });
-            const oauthFromURL = url.substring(codeStartIndex, codeStopIndex);
-            if (oauthFromURL.indexOf("4/") === 0) {
-              getAuthToken(
-                oauthFromURL,
-                currentUser ? currentUser.uid : "",
-                window.location.href.indexOf("localhost") >= 0
-              )
-                .then(successMessage => {
-                  window.location.href = "../";
-                })
-                .catch(() => {
-                  handleUpdateState({
-                    newBusyMessage: "",
-                    newNotification: {
-                      message:
-                        "Unable to get token at this time. Please try again later!",
-                      type: "error",
-                      open: true
-                    }
-                  });
-                });
-            } else {
-              handleUpdateState({
-                newBusyMessage: "",
-                newNotification: {
-                  message:
-                    "Unable to get token. This account may already be authorized.",
-                  type: "warning",
-                  open: true
-                },
-                newCalendars: null,
-                newSelectedCalendars: null,
-                newStage: 2
-              });
-            }
-          } else {
-            handleUpdateState({
-              newBusyMessage: "",
-              newStage: currentUser ? 2 : 0
-            });
-          }
+          // Load data from restore cookie
+          // After loading data from the cookie, get the database object
+          // for the user, and the user's calendars.
+          handleRestoreFromCookie();
         }
-      }, 2000); */
+      }, 1);
+    }
+  };
+
+  /**
+   * handleProcessAuthToken
+   * A helper method for handleLoad
+   * Processes the return data from the OAuth login, and saves the token if the token exists.
+   * Note that this method refreshes the page, and it needs to be restored from the cookie.
+   * @param url The current URL of the page, which contains the OAuth return data
+   */
+  const handleProcessAuthToken = () => {
+    const url = window.location.href;
+    const currentUser = firebase.auth().currentUser;
+    const codeStartIndex = url.indexOf("?code=") + 6;
+    const codeStopIndex = url.indexOf("&scope=");
+    handleUpdateState({
+      newBusyMessage: "Getting Access Token..."
+    });
+    const oauthFromURL = url.substring(codeStartIndex, codeStopIndex);
+    if (oauthFromURL.indexOf("4/") === 0) {
+      getAuthToken(
+        oauthFromURL,
+        currentUser ? currentUser.uid : "",
+        window.location.href.indexOf("localhost") >= 0
+      )
+        .then(() => {
+          handleUpdateState({
+            newNotification: {
+              message:
+                "Successfully Connected your Google Calendar Account to Calendar Condenser",
+              type: "success",
+              open: true
+            },
+            newCurrentUser: currentUser,
+            newStage: 2
+          });
+          window.location.href = "../";
+        })
+        .catch(() => {
+          handleUpdateState({
+            newNotification: {
+              message:
+                "Unable to get token at this time. Please try again later!",
+              type: "error",
+              open: true
+            },
+            newCurrentUser: currentUser,
+            newStage: 2
+          });
+          window.location.href = "../";
+        });
+    } else {
+      handleUpdateState({
+        newBusyMessage: "",
+        newNotification: {
+          message:
+            "Unable to get token. This account may already be authorized.",
+          type: "warning",
+          open: true
+        },
+        newCurrentUser: currentUser,
+        newStage: 2
+      });
+      window.location.href = "../";
+    }
+  };
+
+  /**
+   * handleRestoreFromCookie
+   * A helper method for handleLoad
+   * Restores the React state from the cookie.
+   * Note: Only restores notifications, current user, and stage.
+   * @param callback The function to run after the state is restored.
+   * Note: The callback is only called if the user is logged in.
+   */
+  const handleRestoreFromCookie = (callback?: () => any) => {
+    const cookie = document.cookie;
+    if (cookie.indexOf("state=") < -1 || cookie.substring(6).length === 0) {
+      // No cookie to restore from. Either the user has not been here or has logged out.
+      // Just send the user to the home page.
+      handleUpdateState({
+        newBusyMessage: ""
+      });
+    } else {
+      let cookieObject: CookieState | null;
+      try {
+        cookieObject = JSON.parse(cookie.substring(6));
+      } catch (err) {
+        console.log(err);
+        cookieObject = null;
+      }
+      if (!cookieObject) {
+        // Unable to read the cookie.
+        // Just send the user to the home page.
+        handleUpdateState({
+          newBusyMessage: ""
+        });
+      } else {
+        if (!cookieObject.currentUserId) {
+          // The user is not logged in, or the cookie is out of date.
+          // Restore just the notification and where the user was at.
+          handleUpdateState({
+            newBusyMessage: "",
+            newNotification: cookieObject.notification,
+            newStage: cookieObject.stage
+          });
+        } else {
+          handleUpdateState({
+            newBusyMessage: "Verifying Login Information",
+            newNotification: cookieObject.notification,
+            newStage: cookieObject.stage
+          });
+          const oneTimeLoadListener = firebase
+            .auth()
+            .onAuthStateChanged(user => {
+              if (
+                user &&
+                cookieObject &&
+                user.uid === cookieObject.currentUserId
+              ) {
+                // Restore everything, and get the database and calendars.
+                handleUpdateState({
+                  newBusyMessage: "",
+                  newNotification: cookieObject.notification,
+                  newCurrentUser: user,
+                  newStage: cookieObject.stage
+                });
+                oneTimeLoadListener(); // Removes the listener, so that logout doesn't throw errors
+                if (callback) {
+                  callback();
+                }
+              } else {
+                // The user has changed and the cookie is out of date.
+                // Restore just the notification and where the user was at.
+                handleUpdateState({
+                  newBusyMessage: "",
+                  newNotification: {
+                    message:
+                      "Login information has changed. Please login again.",
+                    type: "warning",
+                    open: true
+                  },
+                  newStage: 1
+                });
+                oneTimeLoadListener(); // Removes the listener, so that logout doesn't throw errors
+              }
+            });
+        }
+      }
     }
   };
 
@@ -398,10 +524,7 @@ const MainPage: React.FunctionComponent = () => {
             {stage === 1 && (
               <Fragment>
                 <Typography variant="h3">Login</Typography>
-                <LoginPage
-                  handleChangeStage={handleChangeStage}
-                  classes={classes}
-                />
+                <LoginPage classes={classes} handleLogin={handleLogin} />
               </Fragment>
             )}
             {stage === 2 && (

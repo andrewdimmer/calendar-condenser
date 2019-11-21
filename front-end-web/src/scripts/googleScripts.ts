@@ -5,36 +5,26 @@ import ky from "ky";
  * getAuthUrl
  * TODO: Add Documentation
  */
-export function getAuthUrl(
-  userToken: string,
-  localhost: boolean
-): Promise<string> {
-  if (!userToken) {
-    return ky
-      .post(
-        "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_auth_url",
-        { body: JSON.stringify({ localhost }) }
-      )
-      .then(response => {
-        return response
-          .text()
-          .then(text => {
-            return text;
-          })
-          .catch(err => {
-            console.log(err);
-            return "";
-          });
-      })
-      .catch(err => {
-        return err;
-      });
-  } else {
-    console.log("Already logged in!");
-    return new Promise((resolve, reject) => {
-      resolve("Already logged in!");
+export function getAuthUrl(localhost: boolean): Promise<string> {
+  return ky
+    .post(
+      "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_auth_url",
+      { body: JSON.stringify({ localhost }) }
+    )
+    .then(response => {
+      return response
+        .text()
+        .then(text => {
+          return text;
+        })
+        .catch(err => {
+          console.log(err);
+          return "";
+        });
+    })
+    .catch(err => {
+      return err;
     });
-  }
 }
 
 /**

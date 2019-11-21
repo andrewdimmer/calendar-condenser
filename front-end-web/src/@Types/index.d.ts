@@ -32,7 +32,7 @@ export declare interface UpdateState {
  */
 export declare interface CookieState {
   notification: NotificationMessage;
-  currentUser: User | null;
+  currentUserId: string;
   stage: string | number;
 }
 

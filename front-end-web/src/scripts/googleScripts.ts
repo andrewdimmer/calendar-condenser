@@ -9,7 +9,6 @@ export function getAuthUrl(
   localhost: boolean
 ): Promise<string> {
   if (!userToken) {
-    console.log("localhost is ", localhost);
     return ky
       .post(
         "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_auth_url",
@@ -42,14 +41,13 @@ export function getAuthToken(
   userId: string,
   localhost: boolean
 ): Promise<string> {
-  console.log("Sending oauth code ", oauthCode);
   return ky
     .post(
       "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_token",
       { body: JSON.stringify({ localhost, oauthCode, userId }) }
     )
     .then(tokens => {
-      console.log("ky success");
+    .catch(err => {
       const tokenText = tokens
         .text()
         .then(text => text)
@@ -57,12 +55,10 @@ export function getAuthToken(
           console.log(err);
           return "";
         });
-      console.log(tokenText);
       return tokenText;
     })
     .catch(err => {
       console.log(err);
-      console.log("ky failure");
       return new Promise((resolve, reject) => {
         reject("");
       });
@@ -85,7 +81,6 @@ export function getUserCalendars(
       return response
         .json()
         .then((data: any) => {
-          console.log(data);
           return data.data;
         })
         .catch((err: any) => {

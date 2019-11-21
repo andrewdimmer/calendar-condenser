@@ -9,11 +9,9 @@ export const getCalendarList = functions.https.onRequest(
     response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: Make more secure later!
 
     const oauth2Client = getOauth2Client("");
-    console.log("refresh_token: ", request.body);
     oauth2Client.setCredentials({
       refresh_token: request.body
     });
-    console.log("oauth2Client.credentials", oauth2Client.credentials);
     try {
       const calendar = google.calendar({ version: "v3", auth: oauth2Client });
       /*const params: calendar_v3.Params$Resource$Calendarlist$List = {
@@ -22,18 +20,14 @@ export const getCalendarList = functions.https.onRequest(
       calendar.calendarList
         .list(/*params*/)
         .then(calendarListFulfilled => {
-          console.log("Calendar Success!");
           response.send(calendarListFulfilled);
         })
         .catch((err: any) => {
-          console.log("Calendar Error.");
           console.log(err);
           response.status(500).send("Calendar Error!");
         });
     } catch (err) {
-      console.log("Calendar Error!");
       console.log(err);
-
       response.send(null);
     }
   }

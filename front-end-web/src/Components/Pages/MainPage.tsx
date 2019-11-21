@@ -128,7 +128,6 @@ const MainPage: React.FunctionComponent = () => {
     });
     getAuthUrl(userToken, window.location.href.indexOf("localhost") >= 0)
       .then(url => {
-        console.log(url);
         window.open(url, "_self");
       })
       .catch(err => {
@@ -254,7 +253,7 @@ const MainPage: React.FunctionComponent = () => {
                   newStage: 3
                 });
               } else {
-                console.log("Yike! This should never happen!");
+                throw new Error("This error should never occur!");
               }
             }, 1000);
           } else {

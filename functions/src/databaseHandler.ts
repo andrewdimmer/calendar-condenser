@@ -19,17 +19,16 @@ export const getUser = functions.https.onRequest((request, response) => {
           .doc(userid)
           .set({ accounts: {} })
           .then(() => {
-            console.log("keys");
-          })
-          .catch(err => {
-            console.log(err);
-          });
-        db.collection("users")
-          .doc(userid)
-          .set(data)
-          .then(() => {
-            console.log(data);
-            response.send(JSON.stringify(data));
+            db.collection("users")
+              .doc(userid)
+              .set(data)
+              .then(() => {
+                response.send(JSON.stringify(data));
+              })
+              .catch(err => {
+                console.log(err);
+                response.send("Unable to get user");
+              });
           })
           .catch(err => {
             console.log(err);

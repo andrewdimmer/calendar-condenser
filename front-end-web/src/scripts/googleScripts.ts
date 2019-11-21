@@ -48,28 +48,16 @@ export function getAuthToken(
   oauthCode: string,
   userId: string,
   localhost: boolean
-): Promise<string> {
+): Promise<boolean> {
   return ky
     .post(
       "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_token",
       { body: JSON.stringify({ localhost, oauthCode, userId }) }
     )
-    .then(tokens => {
-    .catch(err => {
-      const tokenText = tokens
-        .text()
-        .then(text => text)
-        .catch(err => {
-          console.log(err);
-          return "";
-        });
-      return tokenText;
-    })
+    .then(() => true)
     .catch(err => {
       console.log(err);
-      return new Promise((resolve, reject) => {
-        reject("");
-      });
+      return false;
     });
 }
 

@@ -4,6 +4,7 @@ import React, { Fragment } from "react";
 declare interface AuthorizationProps {
   classes: any;
   handleAuth: () => void;
+  handleChangeStage: (newStage: string | number) => void;
 }
 
 /**
@@ -11,7 +12,8 @@ declare interface AuthorizationProps {
  */
 const AuthorizationPage: React.FunctionComponent<AuthorizationProps> = ({
   classes,
-  handleAuth
+  handleAuth,
+  handleChangeStage
 }) => {
   return (
     <Fragment>

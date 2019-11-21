@@ -1,54 +1,95 @@
-import { Button, Checkbox, List, ListItem } from "@material-ui/core";
+import {
+  Button,
+  Checkbox,
+  List,
+  ListItem,
+  Typography
+} from "@material-ui/core";
 import { calendar_v3 } from "googleapis";
 import React, { Fragment } from "react";
+import { UserDatabse } from "../../@Types";
+
 declare interface SelectionProps {
   classes: any;
-  calendars: calendar_v3.Schema$CalendarList | null;
-  handleSelect: (index: number) => void;
-  selectedCalendars: boolean[] | null;
+  userDatabase: UserDatabse.Document | null;
+  calendars: { [key: string]: calendar_v3.Schema$CalendarList };
+  selectedCalendars: { [key: string]: boolean[] };
+  handleSelectCalendar: (accountId: string, index: number) => void;
   handleChangeStage: (newStage: number) => void;
 }
+
 /**
  * TODO: Add Documentation
  */
 const SelectionPage: React.FunctionComponent<SelectionProps> = ({
   classes,
+  userDatabase,
   calendars,
-  handleSelect,
   selectedCalendars,
+  handleSelectCalendar,
   handleChangeStage
 }) => {
+  /**
+   * parseAccounts
+   * Converts the calendar's object to an array that can use the map
+   * function to render.
+   */
+  const parseAccounts = () => {
+    const calendarAccounts: {
+      accountId: string;
+      label: string;
+      calendarList: calendar_v3.Schema$CalendarList;
+    }[] = [];
+    if (userDatabase) {
+      for (const accountId in userDatabase.accounts) {
+        calendarAccounts.push({
+          accountId,
+          label: userDatabase.accounts[accountId].label,
+          calendarList: calendars[accountId]
+        });
+      }
+    }
+    return calendarAccounts;
+  };
+
   return (
     <Fragment>
-      {
-        <List>
-          {calendars &&
-            calendars.items &&
-            calendars.items.map((item, index) => {
-              return (
-                <ListItem
-                  key={index}
-                  button
-                  onClick={() => {
-                    handleSelect(index);
-                  }}
-                >
-                  <Checkbox
-                    checked={
-                      selectedCalendars && selectedCalendars[index]
-                        ? selectedCalendars[index]
-                        : false
-                    }
-                  />
+      <List>
+        {parseAccounts().map(({ accountId, label, calendarList }) => {
+          return (
+            <ListItem key={accountId}>
+              <Typography variant="h5">{label}</Typography>
+              <List>
+                {calendarList.items &&
+                  calendarList.items.map((item, index) => {
+                    return (
+                      <ListItem
+                        key={index}
+                        button
+                        onClick={() => {
+                          handleSelectCalendar(accountId, index);
+                        }}
+                      >
+                        <Checkbox
+                          checked={
+                            selectedCalendars[accountId] &&
+                            selectedCalendars[accountId][index]
+                              ? selectedCalendars[accountId][index]
+                              : false
+                          }
+                        />
 
-                  {calendars && calendars.items
-                    ? calendars.items[index].summary
-                    : ""}
-                </ListItem>
-              );
-            })}
-        </List>
-      }
+                        {calendarList.items && calendarList.items[index]
+                          ? calendarList.items[index].summary
+                          : ""}
+                      </ListItem>
+                    );
+                  })}
+              </List>
+            </ListItem>
+          );
+        })}
+      </List>
 
       <Button
         size="large"

@@ -6,8 +6,7 @@ import { getOauth2Client } from "./authHandlers";
 // https://firebase.google.com/docs/functions/typescript
 export const getCalendarList = functions.https.onRequest(
   async (request, response) => {
-    response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: Make more secure later!
-
+    response.setHeader("Access-Control-Allow-Origin", "*"); // FIXME: Make more secure later!
     const oauth2Client = getOauth2Client("");
     oauth2Client.setCredentials({
       refresh_token: request.body

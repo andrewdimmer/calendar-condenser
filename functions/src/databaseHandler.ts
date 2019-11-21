@@ -3,7 +3,7 @@ import firebaseApp from "./firebaseConfig";
 const db = firebaseApp.firestore();
 
 export const getUser = functions.https.onRequest((request, response) => {
-  response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: Make more secure later!
+  response.setHeader("Access-Control-Allow-Origin", "*"); // FIXME: Make more secure later!
   const userid = request.body;
   db.collection("users")
     .doc(userid)

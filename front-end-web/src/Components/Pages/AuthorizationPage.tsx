@@ -18,6 +18,7 @@ const AuthorizationPage: React.FunctionComponent<AuthorizationProps> = ({
       <Typography>
         Press this button to log in to the Authorization page
       </Typography>
+      {/* TODO: List Calendars that are already authorized here! */}
       <Button
         variant="contained"
         size="large"

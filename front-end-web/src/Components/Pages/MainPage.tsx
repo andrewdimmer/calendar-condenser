@@ -25,6 +25,7 @@ import {
 import { calendar_v3 } from "googleapis";
 
 /**
+ * MainPage
  * TODO: Add Documentation
  */
 const MainPage: React.FunctionComponent = () => {
@@ -49,7 +50,6 @@ const MainPage: React.FunctionComponent = () => {
   ] = React.useState(initialState);
   const [loaded, setLoaded] = React.useState(false);
 
-  //TODO: Add better documentation
   /**
    * handleUpdateState
    * Updates the react state baed off of the new values,
@@ -57,6 +57,8 @@ const MainPage: React.FunctionComponent = () => {
    * Also saves parts of the state to a cookie so the user can pick up
    * where they left off in the event that the page is refreshed or closes.
    * @param New State (note that it is of type State, but all fields are optional)
+   *
+   * TODO: Add to documentation
    */
   const handleUpdateState = ({
     newBusyMessage,
@@ -97,11 +99,9 @@ const MainPage: React.FunctionComponent = () => {
     document.cookie = `state=${JSON.stringify(cookieState)}`;
   };
 
-  // TODO: Add better documentation
   /**
    * handleLogout
-   * Runs when someone clicks the logout button from the nav bar
-   * Clears the userToken from the state and the cookie.
+   * Clears the state data, logs out of firebase, and resets the state resume cookie.
    */
   const handleLogout = (): void => {
     firebase.auth().signOut();
@@ -120,7 +120,9 @@ const MainPage: React.FunctionComponent = () => {
 
   /**
    * handleAuth
-   * TODO: Add documentation
+   * Gets the Google OAuth URL for a user to login and authorize access to Google Calendar.
+   * Precondition: User must be logged in.
+   * Note: Redirects the user off site, when the come back must resume state.
    */
   const handleAuth = () => {
     handleUpdateState({
@@ -143,28 +145,46 @@ const MainPage: React.FunctionComponent = () => {
       });
   };
 
-  // TODO: Add documentation
+  /**
   const handleSelect = (index: number) => {
+   * Toggles where a calendar should be included in the export or not.
+   * @param accountId The accountId that the calendar list came from.
+   * @param index The index of the calendar to update in the list.
+   *
+   * FIXME: Update to handle graular privacy control.
+   */
     if (selectedCalendars) {
       const selected = selectedCalendars.splice(0);
       console.log(selected);
       selected[index] = !selected[index];
       handleUpdateState({ newSelectedCalendars: selected });
     } else {
-      // MAYBE: Should something go here?
+      handleChangeNotification({
+        message: "Oops! Something went wrong. Unable to select calendar.",
+        type: "error",
+        open: true
+      });
     }
   };
 
-  // TODO: Add documentation
+  /**
+   * handleExport
+   * Create the export calendar based off of the settings specified.
+   * @param name The name to give the export calendar.
+   *
+   * FIXME: Currently a stub
+   * TODO: Update to actually do something.
+   */
   const handleExport = (name: string) => {
     console.log(name);
   };
 
   // TODO: Add documentation
+  // FIXME: The whole thing needs to be revamped
   const handleLoad = () => {
     if (!loaded) {
       setLoaded(true);
-      setTimeout(() => {
+      /*setTimeout(() => {
         if (window.location.href.indexOf("?mode=select") > -1) {
           handleUpdateState({ newBusyMessage: "", newStage: 1 });
         } else {
@@ -223,15 +243,19 @@ const MainPage: React.FunctionComponent = () => {
             });
           }
         }
-      }, 2000);
+      }, 2000); */
     }
   };
 
   /**
    * handleGetCalendars
-   * A helper method for handleLoad
+   * A helper method for handleLoad to get a list of a user's Google Calendars
+   *
+   * FIXME: Update to account for the fact that OAuth
+   * tokens are now only stored in the database.
+   * TODO: Add to documentation
    */
-  const handleGetCalendars = (oauthToken: string) => {
+  /* const handleGetCalendars = (oauthToken: string) => {
     setTimeout(() => {
       handleUpdateState({
         newBusyMessage: "Getting Calendar List..."
@@ -280,17 +304,26 @@ const MainPage: React.FunctionComponent = () => {
           }, 1000);
         });
     }, 1000);
-  };
+  }; */
 
-  const handleChangeStage = (newStage: number) => {
+  /**
+   * handleChangeStage
+   * A simple function to change just the stage in the state.
+   * Calling this is basically the same as clicking a link.
+   * @param newStage The stage to go to.
+   */
+  const handleChangeStage = (newStage: string | number) => {
     handleUpdateState({ newStage });
   };
 
-  const handleChangeNotification = (newNotification: {
-    message: string;
-    type: keyof typeof notificationTypes;
-    open: boolean;
-  }) => {
+  /**
+   * handleChangeNotification
+   * A simple funciton to just change the notificaiton in the state.
+   * Mostly used to open or close notications, message changes are usually
+   * updated via handleUpdateState as they change with other data.
+   * @param newNotification The notification to set.
+   */
+  const handleChangeNotification = (newNotification: NotificationMessage) => {
     handleUpdateState({ newNotification });
   };
 

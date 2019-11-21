@@ -37,9 +37,6 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
       >
         Export
       </Button>
-      {
-        //TODO
-      }
     </Fragment>
   );
 };

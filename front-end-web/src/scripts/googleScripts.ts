@@ -2,6 +2,7 @@ import { calendar_v3 } from "googleapis";
 import ky from "ky";
 
 /**
+ * getAuthUrl
  * TODO: Add Documentation
  */
 export function getAuthUrl(
@@ -36,6 +37,13 @@ export function getAuthUrl(
   }
 }
 
+/**
+ * getAuthToken
+ * TODO: Add Documentation
+ * @param oauthCode
+ * @param userId
+ * @param localhost
+ */
 export function getAuthToken(
   oauthCode: string,
   userId: string,
@@ -66,12 +74,13 @@ export function getAuthToken(
 }
 
 /**
+ * getUserCalendars
  * TODO: Add Documentation
  */
 export function getUserCalendars(
   userToken: string
 ): Promise<calendar_v3.Schema$CalendarList | null> {
-  //TODO
+  // FIXME: Update to reflect OAuth token is stored only in the database
   return ky
     .post(
       "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_calendar_list",
@@ -91,6 +100,7 @@ export function getUserCalendars(
 }
 
 /**
+ * createExportCalendar
  * TODO: Add Documentation
  */
 export function createExportCalendar(
@@ -98,7 +108,8 @@ export function createExportCalendar(
   calendars: calendar_v3.Schema$CalendarList,
   name: string
 ): Promise<boolean> {
-  //TODO
+  // FIXME: Currently a Stub
+  // TODO: Add implemenation
   return new Promise((resolve, reject) => {
     resolve(true);
   });

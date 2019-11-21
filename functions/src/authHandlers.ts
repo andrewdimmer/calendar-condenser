@@ -6,7 +6,7 @@ import nanoid = require("nanoid");
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 export const getAuthURL = functions.https.onRequest((request, response) => {
-  response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: Make more secure later!
+  response.setHeader("Access-Control-Allow-Origin", "*"); // FIXME: Make more secure later!
   try {
     const oauth2Client = getOauth2Client(request.body);
 
@@ -33,7 +33,7 @@ export const getAuthURL = functions.https.onRequest((request, response) => {
  * Gets an OAuth Token from an OAuth Code
  */
 export const getToken = functions.https.onRequest(async (request, response) => {
-  response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: Make more secure later!
+  response.setHeader("Access-Control-Allow-Origin", "*"); // FIXME: Make more secure later!
   try {
     const oauth2Client = getOauth2Client(request.body);
     let oauthCode = "",

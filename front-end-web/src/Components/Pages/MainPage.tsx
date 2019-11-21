@@ -250,7 +250,6 @@ const MainPage: React.FunctionComponent = () => {
    * A helper method for handleLoad
    * Processes the return data from the OAuth login, and saves the token if the token exists.
    * Note that this method refreshes the page, and it needs to be restored from the cookie.
-   * @param url The current URL of the page, which contains the OAuth return data
    */
   const handleProcessAuthToken = () => {
     const url = window.location.href;
@@ -315,7 +314,8 @@ const MainPage: React.FunctionComponent = () => {
    * Restores the React state from the cookie.
    * Note: Only restores notifications, current user, and stage.
    * @param callback The function to run after the state is restored.
-   * Note: The callback is only called if the user is logged in.
+   * If no callback is given, get the information from the database.
+   * Note: Either of these actions only occurs if the user is logged in.
    */
   const handleRestoreFromCookie = (callback?: () => any) => {
     const cookie = document.cookie;
@@ -372,6 +372,58 @@ const MainPage: React.FunctionComponent = () => {
                 oneTimeLoadListener(); // Removes the listener, so that logout doesn't throw errors
                 if (callback) {
                   callback();
+                } else {
+                  getUserInfo(user.uid)
+                    .then(document => {
+                      if (cookieObject) {
+                        if (document) {
+                          handleUpdateState({
+                            newBusyMessage: "",
+                            newNotification: cookieObject.notification,
+                            newCurrentUser: user,
+                            newUserDatabase: document,
+                            newStage: cookieObject.stage
+                          });
+                        } else {
+                          handleUpdateState({
+                            newBusyMessage: "",
+                            newNotification: {
+                              message:
+                                "Unable to get user information. Please reload the page, or try again later.",
+                              type: "error",
+                              open: true
+                            },
+                            newCurrentUser: user,
+                            newStage: cookieObject.stage
+                          });
+                        }
+                      } else {
+                        console.log(
+                          "This should never occur, as the cookie must be defined at this point."
+                        );
+                      }
+                    })
+                    .catch(err => {
+                      console.log("This error should never occur");
+                      if (cookieObject) {
+                        console.log(err);
+                        handleUpdateState({
+                          newBusyMessage: "",
+                          newNotification: {
+                            message:
+                              "Unable to get user information. Please reload the page, or try again later.",
+                            type: "error",
+                            open: true
+                          },
+                          newCurrentUser: user,
+                          newStage: cookieObject.stage
+                        });
+                      } else {
+                        console.log(
+                          "This should never occur, as the cookie must be defined at this point."
+                        );
+                      }
+                    });
                 }
               } else {
                 // The user has changed and the cookie is out of date.

@@ -30,6 +30,17 @@ const AuthorizationPage: React.FunctionComponent<AuthorizationProps> = ({
       >
         Login and Authorize
       </Button>
+      <Button
+        variant="contained"
+        size="large"
+        color="primary"
+        className={classes.button}
+        onClick={() => {
+          handleChangeStage(3);
+        }}
+      >
+        Next
+      </Button>
     </Fragment>
   );
 };

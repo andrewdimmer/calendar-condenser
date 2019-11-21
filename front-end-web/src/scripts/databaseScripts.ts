@@ -1,15 +1,19 @@
 import ky from "ky";
+import { UserDatabse } from "../@Types";
 
-export function getUserInfo(userInfo: string): Promise<Object> {
+export function getUserInfo(
+  userId: string
+): Promise<UserDatabse.Document | null> {
   return ky
     .post(
       "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_user",
-      { body: userInfo }
+      { body: userId }
     )
     .then(response => {
       return response
         .text()
         .then(text => {
+          console.log(text);
           return JSON.parse(text);
         })
         .catch(err => {
@@ -18,9 +22,7 @@ export function getUserInfo(userInfo: string): Promise<Object> {
         });
     })
     .catch(err => {
-      return new Promise((resolve, reject) => {
-        console.log(err);
-        resolve(null);
-      });
+      console.log(err);
+      return null;
     });
 }

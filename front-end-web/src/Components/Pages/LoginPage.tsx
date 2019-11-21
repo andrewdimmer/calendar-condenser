@@ -2,7 +2,6 @@ import firebase, { User } from "firebase";
 import React, { Fragment } from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import firebaseApp from "../../scripts/firebaseConfig";
-import { getUserInfo } from "../../scripts/databaseScripts";
 /**
  * TODO: Add Documentation
  */

@@ -42,11 +42,16 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
     }[] = [];
     if (userDatabase) {
       for (const accountId in userDatabase.accounts) {
-        calendarAccounts.push({
-          accountId,
-          label: userDatabase.accounts[accountId].label,
-          calendarList: calendars[accountId]
-        });
+        if (calendars[accountId]) {
+          calendarAccounts.push({
+            accountId,
+            label: userDatabase.accounts[accountId].label,
+            calendarList: calendars[accountId]
+          });
+        } else {
+          console.log("Looks like calendars are not being properly loaded...");
+          // MAYBE: Load calendars here?
+        }
       }
     }
     return calendarAccounts;

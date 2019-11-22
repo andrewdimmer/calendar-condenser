@@ -56,21 +56,20 @@ export function getAuthToken(
  * TODO: Add Documentation
  */
 export function getUserCalendars(
-  userToken: string
-): Promise<calendar_v3.Schema$CalendarList | null> {
-  // FIXME: Update to reflect OAuth token is stored only in the database
+  userId: string
+): Promise<{ [key: string]: calendar_v3.Schema$CalendarList } | null> {
   return ky
     .post(
       "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_calendar_list",
-      { body: userToken }
+      { body: userId }
     )
     .then(response => {
       return response
         .json()
-        .then((data: any) => {
-          return data.data;
+        .then(data => {
+          return data;
         })
-        .catch((err: any) => {
+        .catch(err => {
           console.log(err);
           return null;
         });
@@ -82,7 +81,7 @@ export function getUserCalendars(
  * TODO: Add Documentation
  */
 export function createExportCalendar(
-  userToken: string,
+  userId: string,
   calendars: calendar_v3.Schema$CalendarList,
   name: string
 ): Promise<boolean> {

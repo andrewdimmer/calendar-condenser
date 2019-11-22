@@ -48,73 +48,67 @@ export const getToken = functions.https.onRequest(async (request, response) => {
     if (userId && oauthCode) {
       const { tokens } = await oauth2Client.getToken(oauthCode);
       const { refresh_token } = tokens;
-      firebaseapp
+      const userDoc = firebaseapp
         .firestore()
         .collection("users")
-        .doc(userId)
-        .get()
-        .then(userData => {
-          const data = userData.data();
-          if (data) {
-            const label = `Google Calendar Account ${data.accounts.length}`;
-            const accountId = nanoid();
-            data.accounts.push({ accountId, label });
-            firebaseapp
-              .firestore()
-              .collection("users")
-              .doc(userId)
-              .set(data)
-              .then(() => {
-                firebaseapp
-                  .firestore()
-                  .collection("keys")
-                  .doc(userId)
-                  .get()
-                  .then(keyData => {
-                    const data = keyData.data();
-                    if (data) {
-                      data.accounts[accountId] = {
-                        accountId,
-                        refresh_token,
-                        valid: true
-                      };
-                      firebaseapp
-                        .firestore()
-                        .collection("keys")
-                        .doc(userId)
-                        .set(data)
-                        .then(() => {
-                          response
-                            .status(200)
-                            .send("Account Authorized Successfully!");
-                        })
-                        .catch(err => {
-                          console.log(err);
-                          throw new Error(
-                            "Unable to write key to keys collection in the database"
-                          );
-                        });
-                    } else {
-                      throw new Error(
-                        "User's keys do not exist in the database."
-                      );
-                    }
-                  })
-                  .catch(err => {
-                    console.log(err);
-                    throw new Error("User does not exist in the database.");
-                  });
-              })
-              .catch(err => {
-                console.log(err);
-                throw new Error(
-                  "Unable to write label to user collection in the databse"
-                );
-              });
-          } else {
-            throw new Error("User does not exist in the database.");
-          }
-        });
+        .doc(userId);
+      userDoc.get().then(userData => {
+        const data = userData.data();
+        if (data) {
+          const label = `Google Calendar Account ${data.accounts.length}`;
+          const accountId = nanoid();
+          data.accounts.push({ accountId, label });
+          userDoc
+            .set(data)
+            .then(() => {
+              const keysDoc = firebaseapp
+                .firestore()
+                .collection("keys")
+                .doc(userId);
+              keysDoc
+                .get()
+                .then(keyData => {
+                  const data = keyData.data();
+                  if (data) {
+                    data.accounts[accountId] = {
+                      accountId,
+                      refresh_token,
+                      valid: true
+                    };
+                    keysDoc
+                      .set(data)
+                      .then(() => {
+                        response
+                          .status(200)
+                          .send("Account Authorized Successfully!");
+                      })
+                      .catch(err => {
+                        console.log(err);
+                        throw new Error(
+                          "Unable to write key to keys collection in the database"
+                        );
+                      });
+                  } else {
+                    throw new Error(
+                      "User's keys do not exist in the database."
+                    );
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                  throw new Error("User does not exist in the database.");
+                });
+            })
+            .catch(err => {
+              console.log(err);
+              throw new Error(
+                "Unable to write label to user collection in the databse"
+              );
+            });
+        } else {
+          throw new Error("User does not exist in the database.");
+        }
+      });
     } else {
       throw new Error("Missing either userId or oauthCode");
     }

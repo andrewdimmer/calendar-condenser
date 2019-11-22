@@ -16,6 +16,7 @@ declare interface SelectionProps {
   selectedCalendars: { [key: string]: boolean[] };
   handleSelectCalendar: (accountId: string, index: number) => void;
   handleChangeStage: (newStage: number) => void;
+  handleGetCalendars: () => void;
 }
 
 /**
@@ -27,7 +28,8 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
   calendars,
   selectedCalendars,
   handleSelectCalendar,
-  handleChangeStage
+  handleChangeStage,
+  handleGetCalendars
 }) => {
   /**
    * parseAccounts
@@ -41,16 +43,22 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
       calendarList: calendar_v3.Schema$CalendarList;
     }[] = [];
     if (userDatabase) {
-      for (const accountId in userDatabase.accounts) {
+      let fetchingCalendars = false;
+      for (const { accountId, label } of userDatabase.accounts) {
         if (calendars[accountId]) {
           calendarAccounts.push({
             accountId,
-            label: userDatabase.accounts[accountId].label,
+            label,
             calendarList: calendars[accountId]
           });
         } else {
-          console.log("Looks like calendars are not being properly loaded...");
-          // MAYBE: Load calendars here?
+          console.log(
+            "It looks like calendars are not properly loaded... re-fetching calendars..."
+          );
+          if (!fetchingCalendars) {
+            fetchingCalendars = true;
+            handleGetCalendars();
+          }
         }
       }
     }
@@ -63,34 +71,36 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
         {parseAccounts().map(({ accountId, label, calendarList }) => {
           return (
             <ListItem key={accountId}>
-              <Typography variant="h5">{label}</Typography>
-              <List>
-                {calendarList.items &&
-                  calendarList.items.map((item, index) => {
-                    return (
-                      <ListItem
-                        key={index}
-                        button
-                        onClick={() => {
-                          handleSelectCalendar(accountId, index);
-                        }}
-                      >
-                        <Checkbox
-                          checked={
-                            selectedCalendars[accountId] &&
-                            selectedCalendars[accountId][index]
-                              ? selectedCalendars[accountId][index]
-                              : false
-                          }
-                        />
+              <div>
+                <Typography variant="h5">{label}</Typography>
+                <List>
+                  {calendarList.items &&
+                    calendarList.items.map((item, index) => {
+                      return (
+                        <ListItem
+                          key={`${accountId}_${index}`}
+                          button
+                          onClick={() => {
+                            handleSelectCalendar(accountId, index);
+                          }}
+                        >
+                          <Checkbox
+                            checked={
+                              selectedCalendars[accountId] &&
+                              selectedCalendars[accountId][index]
+                                ? selectedCalendars[accountId][index]
+                                : false
+                            }
+                          />
 
-                        {calendarList.items && calendarList.items[index]
-                          ? calendarList.items[index].summary
-                          : ""}
-                      </ListItem>
-                    );
-                  })}
-              </List>
+                          {calendarList.items && calendarList.items[index]
+                            ? calendarList.items[index].summary
+                            : ""}
+                        </ListItem>
+                      );
+                    })}
+                </List>
+              </div>
             </ListItem>
           );
         })}

@@ -13,8 +13,12 @@ import {
   State,
   UpdateState
 } from "../../@Types";
-import { getAuthToken, getAuthUrl } from "../../scripts";
-import { getUserInfo } from "../../scripts/databaseScripts";
+import {
+  getAuthToken,
+  getAuthUrl,
+  getUserInfo,
+  getUserCalendars
+} from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
 import { NavBar, NotificationBar } from "../Layouts";
@@ -54,7 +58,8 @@ const MainPage: React.FunctionComponent = () => {
     },
     setState
   ] = React.useState(initialState);
-  const [loaded, setLoaded] = React.useState(false);
+  const [mainPageLoaded, setMainPageLoaded] = React.useState(false);
+  const [calendarsLoaded, setCalendarsLoaded] = React.useState(false);
 
   /**
    * handleUpdateState
@@ -194,7 +199,7 @@ const MainPage: React.FunctionComponent = () => {
     if (selectedCalendars) {
       const newSelectedCalendars = {} as { [key: string]: boolean[] };
       for (const key in selectedCalendars) {
-        newSelectedCalendars[key] = selectedCalendars[accountId].splice(0);
+        newSelectedCalendars[key] = selectedCalendars[key].splice(0);
       }
       newSelectedCalendars[accountId][index] = !newSelectedCalendars[accountId][
         index
@@ -224,8 +229,8 @@ const MainPage: React.FunctionComponent = () => {
   // TODO: Add documentation
   // FIXME: The whole thing needs to be revamped
   const handleLoad = () => {
-    if (!loaded) {
-      setLoaded(true);
+    if (!mainPageLoaded) {
+      setMainPageLoaded(true);
       setTimeout(() => {
         const url = window.location.href;
         if (url.indexOf("?mode=select") > -1) {
@@ -448,62 +453,77 @@ const MainPage: React.FunctionComponent = () => {
 
   /**
    * handleGetCalendars
-   * A helper method for handleLoad to get a list of a user's Google Calendars
+   * A method to get a list of a user's Google Calendars
    *
-   * FIXME: Update to account for the fact that OAuth
-   * tokens are now only stored in the database.
    * TODO: Add to documentation
    */
-  /* const handleGetCalendars = (oauthToken: string) => {
-    setTimeout(() => {
+  const handleGetCalendars = () => {
+    if (!calendarsLoaded) {
+      setCalendarsLoaded(true);
       handleUpdateState({
-        newBusyMessage: "Getting Calendar List..."
+        newBusyMessage: "Getting Calendar List(s)..."
       });
-      getUserCalendars(oauthToken)
-        .then(calendarList => {
-          if (calendarList && calendarList.items) {
-            setTimeout(() => {
-              if (calendarList.items) {
-                handleUpdateState({
-                  newBusyMessage: "",
-                  newNotification: {
-                    message: "Successfully Retrieved Calendars",
-                    type: "success",
-                    open: true
-                  },
-                  newCalendars: calendarList,
-                  newSelectedCalendars: calendarList.items.map(() => false, []),
-                  newStage: 3
-                });
-              } else {
-                throw new Error("This error should never occur!");
+      if (currentUser) {
+        getUserCalendars(currentUser.uid)
+          .then(newCalendars => {
+            if (newCalendars) {
+              const newSelectedCalendars: { [key: string]: boolean[] } = {};
+              for (const accountId in newCalendars) {
+                const currentAccount = newCalendars[accountId];
+                newSelectedCalendars[accountId] = currentAccount.items
+                  ? currentAccount.items.map(() => false)
+                  : [];
               }
-            }, 1000);
-          } else {
-            throw new Error("No CalendarList items returned!");
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          setTimeout(() => {
-            const calendarErrorState: State = {
-              busyMessage: "",
-              notification: {
+              handleUpdateState({
+                newBusyMessage: "",
+                newNotification: {
+                  message: "Successfully Retrieved Calendars",
+                  type: "success",
+                  open: true
+                },
+                newCalendars,
+                newSelectedCalendars
+              });
+            } else {
+              console.log("No CalendarList items returned!");
+              handleUpdateState({
+                newBusyMessage: "",
+                newNotification: {
+                  message:
+                    "Unable to get calendars. Please refresh the page or try again later.",
+                  type: "error",
+                  open: true
+                }
+              });
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            handleUpdateState({
+              newBusyMessage: "",
+              newNotification: {
                 message:
-                  "Unable to get calendars. Please logout and try re-authorizing.",
+                  "Unable to get calendars. Please refresh the page or try again later.",
                 type: "error",
                 open: true
-              },
-              userToken,
-              calendars: null,
-              selectedCalendars: null,
-              stage: 2
-            };
-            setState(calendarErrorState);
-          }, 1000);
+              }
+            });
+          });
+      } else {
+        handleUpdateState({
+          newBusyMessage: "",
+          newNotification: {
+            message: "You need to be logged in to get calendar information!",
+            type: "warning",
+            open: true
+          }
         });
-    }, 1000);
-  }; */
+      }
+    }
+    setTimeout(() => {
+      setCalendarsLoaded(false);
+    }, 3000);
+  };
 
   /**
    * handleChangeStage
@@ -599,6 +619,7 @@ const MainPage: React.FunctionComponent = () => {
                   selectedCalendars={selectedCalendars}
                   handleSelectCalendar={handleSelectCalendar}
                   handleChangeStage={handleChangeStage}
+                  handleGetCalendars={handleGetCalendars}
                 />
               </Fragment>
             )}

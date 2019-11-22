@@ -10,9 +10,6 @@ const SuccessPage: React.FunctionComponent<SuccessProps> = ({ classes }) => {
   return (
     <Fragment>
       <Typography variant="h4"> Success! </Typography>
-      {
-        //TODO
-      }
     </Fragment>
   );
 };

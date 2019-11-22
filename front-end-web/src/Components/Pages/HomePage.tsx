@@ -5,7 +5,7 @@ import React, { Fragment } from "react";
  */
 declare interface HomeProps {
   classes: any;
-  handleChangeStage: (stage: number) => void;
+  handleChangeStage: (newStage: number) => void;
 }
 const HomePage: React.FunctionComponent<HomeProps> = ({
   classes,

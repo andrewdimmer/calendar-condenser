@@ -7,10 +7,11 @@ import Typography from "@material-ui/core/Typography";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
 import React from "react";
+import { User } from "firebase";
 
 declare interface NavProps {
   classes: any;
-  userToken: string;
+  currentUser: User | null;
   handleLogout: () => void;
 }
 /**
@@ -19,7 +20,7 @@ declare interface NavProps {
 
 const NavBar: React.FunctionComponent<NavProps> = ({
   classes,
-  userToken,
+  currentUser,
   handleLogout
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -47,7 +48,7 @@ const NavBar: React.FunctionComponent<NavProps> = ({
           <Typography variant="h6" className={classes.title}>
             Calendar
           </Typography>
-          {userToken && (
+          {currentUser && (
             <div>
               <IconButton
                 aria-label="account of current user"

@@ -4,6 +4,7 @@ import React, { Fragment } from "react";
 declare interface AuthorizationProps {
   classes: any;
   handleAuth: () => void;
+  handleChangeStage: (newStage: string | number) => void;
 }
 
 /**
@@ -11,13 +12,15 @@ declare interface AuthorizationProps {
  */
 const AuthorizationPage: React.FunctionComponent<AuthorizationProps> = ({
   classes,
-  handleAuth
+  handleAuth,
+  handleChangeStage
 }) => {
   return (
     <Fragment>
       <Typography>
         Press this button to log in to the Authorization page
       </Typography>
+      {/* TODO: List Calendars that are already authorized here! */}
       <Button
         variant="contained"
         size="large"
@@ -26,6 +29,17 @@ const AuthorizationPage: React.FunctionComponent<AuthorizationProps> = ({
         onClick={handleAuth}
       >
         Login and Authorize
+      </Button>
+      <Button
+        variant="contained"
+        size="large"
+        color="primary"
+        className={classes.button}
+        onClick={() => {
+          handleChangeStage(3);
+        }}
+      >
+        Next
       </Button>
     </Fragment>
   );

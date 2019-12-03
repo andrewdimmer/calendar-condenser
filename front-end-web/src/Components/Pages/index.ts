@@ -6,6 +6,7 @@ import LoginPage from "./LoginPage";
 import MainPage from "./MainPage";
 import SelectionPage from "./SelectionPage";
 import SuccessPage from "./SuccessPage";
+import ProfilePage from "./ProfilePage";
 
 // A central location to get all pages from.
 export {
@@ -16,5 +17,6 @@ export {
   MainPage,
   SelectionPage,
   SuccessPage,
-  HomePage
+  HomePage,
+  ProfilePage
 };

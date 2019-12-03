@@ -13,6 +13,7 @@ declare interface NavProps {
   classes: any;
   currentUser: User | null;
   handleLogout: () => void;
+  handleToggleProfile: () => void;
 }
 /**
  * TODO: Add Documentation
@@ -21,7 +22,8 @@ declare interface NavProps {
 const NavBar: React.FunctionComponent<NavProps> = ({
   classes,
   currentUser,
-  handleLogout
+  handleLogout,
+  handleToggleProfile
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -31,6 +33,11 @@ const NavBar: React.FunctionComponent<NavProps> = ({
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleOpenProfile = () => {
+    handleToggleProfile();
+    handleClose();
   };
 
   return (
@@ -74,7 +81,7 @@ const NavBar: React.FunctionComponent<NavProps> = ({
                 open={open}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleOpenProfile}>Profile</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </div>

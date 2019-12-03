@@ -102,7 +102,7 @@ export const getToken = functions.https.onRequest(async (request, response) => {
             .catch(err => {
               console.log(err);
               throw new Error(
-                "Unable to write label to user collection in the databse"
+                "Unable to write label to user collection in the database"
               );
             });
         } else {

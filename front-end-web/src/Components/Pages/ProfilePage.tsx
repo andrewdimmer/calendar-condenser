@@ -1,16 +1,16 @@
 import {
   Button,
-  Typography,
-  TextField,
   Dialog,
-  DialogContentText,
-  DialogContent,
   DialogActions,
-  DialogTitle
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField
 } from "@material-ui/core";
-import React, { Fragment } from "react";
 import { User } from "firebase";
+import React, { Fragment } from "react";
 import { NotificationMessage } from "../../@Types";
+
 declare interface ProfileProps {
   openPage: boolean;
   currentUser: User | null;

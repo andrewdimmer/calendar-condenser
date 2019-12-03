@@ -11,17 +11,17 @@ import {
 } from "@material-ui/core";
 import { calendar_v3 } from "googleapis";
 import React, { Fragment } from "react";
-import { UserDatabse, PrivacyTypes } from "../../@Types";
+import { UserDatabase, PrivacyLevel } from "../../@Types";
 
 declare interface SelectionProps {
   classes: any;
-  userDatabase: UserDatabse.Document | null;
+  userDatabase: UserDatabase.Document | null;
   calendars: { [key: string]: calendar_v3.Schema$CalendarList };
-  selectedCalendars: { [key: string]: PrivacyTypes[] };
+  selectedCalendars: { [key: string]: PrivacyLevel[] };
   handleSelectCalendar: (
     accountId: string,
     index: number,
-    privacyLevel: PrivacyTypes
+    privacyLevel: PrivacyLevel
   ) => void;
   handleChangeStage: (newStage: number) => void;
   handleGetCalendars: () => void;
@@ -87,78 +87,81 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
                       return (
                         <ListItem key={`${accountId}_${index}`}>
                           <div>
-                          <Typography variant="h6">{calendarList.items && calendarList.items[index]
-                            ? calendarList.items[index].summary
-                            : ""}</Typography>
-                          <FormControl
-                            component="fieldset"
-                            className={classes.formControl}
-                          >
-                            <FormLabel component="legend">
-                              Select Privacy Level
-                            </FormLabel>
-                            <RadioGroup
-                              aria-label=""
-                              name=""
-                              value={
-                                selectedCalendars[accountId] &&
-                                selectedCalendars[accountId][index]
-                                  ? selectedCalendars[accountId][index]
-                                  : "None"
-                              }
-                            ><div>
-                              <FormControlLabel
-                                value={"None"}
-                                control={<Radio />}
-                                label="None"
-                                onClick={() => {
-                                  handleSelectCalendar(
-                                    accountId,
-                                    index,
-                                    "None"
-                                  );
-                                }}
-                              />
-                              <FormControlLabel
-                                value={"Busy"}
-                                control={<Radio />}
-                                label="Busy"
-                                onClick={() => {
-                                  handleSelectCalendar(
-                                    accountId,
-                                    index,
-                                    "Busy"
-                                  );
-                                }}
-                              />
-                              <FormControlLabel
-                                value={"TitleOnly"}
-                                control={<Radio />}
-                                label="Title Only"
-                                onClick={() => {
-                                  handleSelectCalendar(
-                                    accountId,
-                                    index,
-                                    "TitleOnly"
-                                  );
-                                }}
-                              />
-                              <FormControlLabel
-                                value={"FullInformation"}
-                                control={<Radio />}
-                                label="Full Information"
-                                onClick={() => {
-                                  handleSelectCalendar(
-                                    accountId,
-                                    index,
-                                    "FullInformation"
-                                  );
-                                }}
-                              />
-                              </div>
-                            </RadioGroup>
-                          </FormControl>
-                      </div>
+                            <Typography variant="h6">
+                              {calendarList.items && calendarList.items[index]
+                                ? calendarList.items[index].summary
+                                : ""}
+                            </Typography>
+                            <FormControl
+                              component="fieldset"
+                              className={classes.formControl}
+                            >
+                              <FormLabel component="legend">
+                                Select Privacy Level
+                              </FormLabel>
+                              <RadioGroup
+                                aria-label=""
+                                name=""
+                                value={
+                                  selectedCalendars[accountId] &&
+                                  selectedCalendars[accountId][index]
+                                    ? selectedCalendars[accountId][index]
+                                    : "none"
+                                }
+                              >
+                                <div>
+                                  <FormControlLabel
+                                    value={"none"}
+                                    control={<Radio />}
+                                    label="none"
+                                    onClick={() => {
+                                      handleSelectCalendar(
+                                        accountId,
+                                        index,
+                                        "none"
+                                      );
+                                    }}
+                                  />
+                                  <FormControlLabel
+                                    value={"busy"}
+                                    control={<Radio />}
+                                    label="busy"
+                                    onClick={() => {
+                                      handleSelectCalendar(
+                                        accountId,
+                                        index,
+                                        "busy"
+                                      );
+                                    }}
+                                  />
+                                  <FormControlLabel
+                                    value={"title"}
+                                    control={<Radio />}
+                                    label="Title Only"
+                                    onClick={() => {
+                                      handleSelectCalendar(
+                                        accountId,
+                                        index,
+                                        "title"
+                                      );
+                                    }}
+                                  />
+                                  <FormControlLabel
+                                    value={"full"}
+                                    control={<Radio />}
+                                    label="Full Information"
+                                    onClick={() => {
+                                      handleSelectCalendar(
+                                        accountId,
+                                        index,
+                                        "full"
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              </RadioGroup>
+                            </FormControl>
+                          </div>
                         </ListItem>
                       );
                     })}

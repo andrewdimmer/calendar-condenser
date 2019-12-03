@@ -10,16 +10,17 @@ import React, { Fragment } from "react";
 import {
   CookieState,
   NotificationMessage,
+  PrivacyLevel,
   State,
   UpdateState,
-  PrivacyTypes
+  UserDatabase
 } from "../../@Types";
 import {
+  createExportCalendar,
   getAuthToken,
   getAuthUrl,
-  getUserInfo,
   getUserCalendars,
-  createExportCalendar
+  getUserInfo
 } from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
@@ -30,9 +31,9 @@ import {
   HomePage,
   LoadingPage,
   LoginPage,
+  ProfilePage,
   SelectionPage,
-  SuccessPage,
-  ProfilePage
+  SuccessPage
 } from "./";
 
 /**
@@ -205,10 +206,10 @@ const MainPage: React.FunctionComponent = () => {
   const handleSelectCalendar = (
     accountId: string,
     index: number,
-    privacyLevel: PrivacyTypes
+    privacyLevel: PrivacyLevel
   ) => {
     if (selectedCalendars) {
-      const newSelectedCalendars = {} as { [key: string]: PrivacyTypes[] };
+      const newSelectedCalendars = {} as { [key: string]: PrivacyLevel[] };
       for (const key in selectedCalendars) {
         newSelectedCalendars[key] = selectedCalendars[key].splice(0);
       }
@@ -526,12 +527,12 @@ const MainPage: React.FunctionComponent = () => {
           .then(newCalendars => {
             if (newCalendars) {
               const newSelectedCalendars: {
-                [key: string]: PrivacyTypes[];
+                [key: string]: PrivacyLevel[];
               } = {};
               for (const accountId in newCalendars) {
                 const currentAccount = newCalendars[accountId];
                 newSelectedCalendars[accountId] = currentAccount.items
-                  ? currentAccount.items.map(() => "None")
+                  ? currentAccount.items.map(() => "none")
                   : [];
               }
               handleUpdateState({

@@ -1,9 +1,9 @@
 import ky from "ky";
-import { UserDatabse } from "../@Types";
+import { UserDatabase } from "../@Types";
 
 export function getUserInfo(
   userId: string
-): Promise<UserDatabse.Document | null> {
+): Promise<UserDatabase.Document | null> {
   return ky
     .post(
       "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/get_user",

@@ -8,9 +8,9 @@ export declare interface State {
   busyMessage: string;
   notification: NotificationMessage;
   currentUser: User | null;
-  userDatabase: UserDatabse.Document | null;
+  userDatabase: UserDatabase.Document | null;
   calendars: { [key: string]: calendar_v3.Schema$CalendarList };
-  selectedCalendars: { [key: string]: PrivacyTypes[] };
+  selectedCalendars: { [key: string]: PrivacyLevel[] };
   stage: string | number;
   profilePage: boolean;
 }
@@ -22,9 +22,9 @@ export declare interface UpdateState {
   newBusyMessage?: string;
   newNotification?: NotificationMessage;
   newCurrentUser?: User | null;
-  newUserDatabase?: UserDatabse.Document | null;
+  newUserDatabase?: UserDatabase.Document | null;
   newCalendars?: { [key: string]: calendar_v3.Schema$CalendarList };
-  newSelectedCalendars?: { [key: string]: PrivacyTypes[] };
+  newSelectedCalendars?: { [key: string]: PrivacyLevel[] };
   newStage?: string | number;
   newProfilePage?: boolean;
 }
@@ -60,13 +60,13 @@ export declare interface NotificationMessage {
 /**
  * TODO: Add Documentation
  */
-export namespace UserDatabse {
+export namespace UserDatabase {
   /**
    * TODO: Add Documentation
    */ declare interface Document {
     userId: string;
     accounts: CalendarAccount[];
-    exports: any;
+    exports: ExportCalendar[];
   }
 
   /**
@@ -76,19 +76,38 @@ export namespace UserDatabse {
     accountId: string;
     label: string;
   }
+
+  /**
+   * TODO: Add Documentation
+   */
+  declare interface ExportCalendar {
+    calendarId?: string;
+    calendarName: string;
+    ownerAccountId: string;
+    includedCalendars: SelectedCalendarShorthand[];
+  }
+
+  /**
+   * TODO: Add Documentation
+   */
+  declare interface SelectedCalendarShorthand {
+    accountId: string;
+    calendarId: string;
+    privacyLevel: PrivacyLevel;
+  }
 }
 
 /**
  * TODO: Add Documentation
  */
-declare enum PrivacyTypesEnum {
-  None,
-  Busy,
-  TitleOnly,
-  FullInformation
+declare enum PrivacyLevels {
+  none,
+  busy,
+  title,
+  full
 }
 
 /**
  * TODO: Add Documentation
  */
-export type PrivacyTypes = keyof typeof PrivacyTypesEnum;
+export type PrivacyLevel = keyof typeof PrivacyLevels;

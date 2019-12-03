@@ -120,10 +120,12 @@ export const getToken = functions.https.onRequest(async (request, response) => {
   }
 });
 
-export const getOauth2Client = (body: string) => {
-  let localhost;
+export const getOauth2Client = (body?: string) => {
+  let localhost = null;
   try {
-    localhost = JSON.parse(body).localhost;
+    if (body) {
+      localhost = JSON.parse(body).localhost;
+    }
   } catch (err) {
     console.log(err);
     localhost = null;

@@ -18,7 +18,8 @@ import {
   getAuthToken,
   getAuthUrl,
   getUserInfo,
-  getUserCalendars
+  getUserCalendars,
+  createExportCalendar
 } from "../../scripts";
 import { styles } from "../../Styles";
 import { PrivacyPolicy } from "../Content";
@@ -231,7 +232,56 @@ const MainPage: React.FunctionComponent = () => {
    * TODO: Update to actually do something.
    */
   const handleExport = (name: string) => {
-    console.log(name);
+    if (currentUser && userDatabase) {
+      handleUpdateState({ newBusyMessage: "Creating Export Calendar..." });
+      createExportCalendar(
+        currentUser.uid,
+        userDatabase.accounts[0].accountId,
+        name
+      )
+        .then(successBool => {
+          if (successBool) {
+            handleUpdateState({
+              newBusyMessage: "",
+              newNotification: {
+                message: "Successfully created Export Calendar.",
+                type: "success",
+                open: true
+              },
+              newStage: 5
+            });
+          } else {
+            handleUpdateState({
+              newBusyMessage: "",
+              newNotification: {
+                message:
+                  "Unable to create Export Calendar. Please try again later.",
+                type: "error",
+                open: true
+              }
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          handleUpdateState({
+            newBusyMessage: "",
+            newNotification: {
+              message:
+                "Unable to create Export Calendar. Please try again later.",
+              type: "error",
+              open: true
+            }
+          });
+        });
+    } else {
+      handleChangeNotification({
+        message:
+          "Unable to create export calendar. Please try logging in and out before trying again.",
+        type: "error",
+        open: true
+      });
+    }
   };
 
   // TODO: Add documentation

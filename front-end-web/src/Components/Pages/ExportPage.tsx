@@ -32,7 +32,6 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         className={classes.button}
         onClick={function() {
           handleExport(calendarName);
-          handleChangeStage(5);
         }}
       >
         Export

@@ -232,14 +232,39 @@ const MainPage: React.FunctionComponent = () => {
    * FIXME: Currently a stub
    * TODO: Update to actually do something.
    */
-  const handleExport = (name: string) => {
-    if (currentUser && userDatabase) {
+  const handleExport = (calendarName: string, ownerAccountId: string) => {
+    // Streamline Selected Calendars
+    if (currentUser && userDatabase && selectedCalendars && calendars) {
       handleUpdateState({ newBusyMessage: "Creating Export Calendar..." });
-      createExportCalendar(
-        currentUser.uid,
-        userDatabase.accounts[0].accountId,
-        name
-      )
+      const includedCalendars: UserDatabase.SelectedCalendarShorthand[] = [];
+      for (const index in userDatabase.accounts) {
+        const accountId = userDatabase.accounts[index].accountId;
+        if (calendars[accountId]) {
+          const items = calendars[accountId].items;
+          if (items) {
+            for (let i = 0; i < items.length; i++) {
+              if (selectedCalendars[accountId][i] !== "none") {
+                const calendarId = items[i].id;
+                if (calendarId) {
+                  includedCalendars.push({
+                    accountId,
+                    calendarId,
+                    privacyLevel: selectedCalendars[accountId][i]
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+      if (!ownerAccountId) {
+        ownerAccountId = userDatabase.accounts[0].accountId;
+      }
+      createExportCalendar(currentUser.uid, {
+        calendarName,
+        ownerAccountId,
+        includedCalendars
+      })
         .then(successBool => {
           if (successBool) {
             handleUpdateState({

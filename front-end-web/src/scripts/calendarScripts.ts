@@ -1,5 +1,6 @@
 import { calendar_v3 } from "googleapis";
 import ky from "ky";
+import { UserDatabase } from "../@Types";
 
 /**
  * getAuthUrl
@@ -82,13 +83,12 @@ export function getUserCalendars(
  */
 export function createExportCalendar(
   userId: string,
-  ownerAccountId: string,
-  exportCalendarName: string
+  exportCalendar: UserDatabase.ExportCalendar
 ): Promise<boolean> {
   return ky
     .post(
       "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/create_export_calendar",
-      { body: JSON.stringify({ userId, ownerAccountId, exportCalendarName }) }
+      { body: JSON.stringify({ userId, exportCalendar }) }
     )
     .then(response => {
       console.log(response);

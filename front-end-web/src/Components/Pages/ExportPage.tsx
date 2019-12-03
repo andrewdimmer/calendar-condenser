@@ -8,7 +8,7 @@ let calendarName: string = "";
 
 declare interface ExportProps {
   classes: any;
-  handleExport: (calendarName: string) => void;
+  handleExport: (calendarName: string, ownerAccountId: string) => void;
   handleChangeStage: (newStage: number) => void;
 }
 
@@ -31,7 +31,8 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         size="large"
         className={classes.button}
         onClick={function() {
-          handleExport(calendarName);
+          const ownerId = ""; //FIXME: Resolve in merge with James' branch
+          handleExport(calendarName, ownerId);
         }}
       >
         Export

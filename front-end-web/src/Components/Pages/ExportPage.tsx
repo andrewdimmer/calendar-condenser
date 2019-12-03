@@ -27,7 +27,11 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
   handleChangeStage,
   userDatabase
 }) => {
-  const [ownerID, setOwnerID] = React.useState("");
+  const [ownerID, setOwnerID] = React.useState(
+    userDatabase && userDatabase.accounts.length > 0
+      ? userDatabase.accounts[0].accountId
+      : ""
+  );
   return (
     <Fragment>
       <TextField

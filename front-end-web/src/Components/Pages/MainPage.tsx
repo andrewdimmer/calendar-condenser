@@ -196,15 +196,17 @@ const MainPage: React.FunctionComponent = () => {
    *
    * FIXME: Update to handle graular privacy control.
    */
-  const handleSelectCalendar = (accountId: string, index: number) => {
+  const handleSelectCalendar = (
+    accountId: string,
+    index: number,
+    privacyLevel: PrivacyTypes
+  ) => {
     if (selectedCalendars) {
       const newSelectedCalendars = {} as { [key: string]: PrivacyTypes[] };
       for (const key in selectedCalendars) {
         newSelectedCalendars[key] = selectedCalendars[key].splice(0);
-      } 
-      newSelectedCalendars[accountId][ index] = !newSelectedCalendars[accountId][
-        index
-      ];
+      }
+      newSelectedCalendars[accountId][index] = privacyLevel;
       handleUpdateState({ newSelectedCalendars });
     } else {
       handleChangeNotification({
@@ -468,11 +470,13 @@ const MainPage: React.FunctionComponent = () => {
         getUserCalendars(currentUser.uid)
           .then(newCalendars => {
             if (newCalendars) {
-              const newSelectedCalendars: { [key: string]: PrivacyTypes[] } = {};
+              const newSelectedCalendars: {
+                [key: string]: PrivacyTypes[];
+              } = {};
               for (const accountId in newCalendars) {
                 const currentAccount = newCalendars[accountId];
                 newSelectedCalendars[accountId] = currentAccount.items
-                  ? currentAccount.items.map(() => PrivacyTypes.None)
+                  ? currentAccount.items.map(() => "None")
                   : [];
               }
               handleUpdateState({

@@ -39,20 +39,13 @@ export declare interface CookieState {
 /**
  * TODO: Add Documentation
  */
-export declare enum notificationTypes {
+declare enum notificationTypes {
   success,
   error,
   info,
   warning
-
 }
-export declare enum PrivacyTypes {
-  None, 
-  Busy, 
-  TitleOnly, 
-  FullInformation
 
-}
 /**
  * TODO: Add Documentation
  */
@@ -82,3 +75,18 @@ export namespace UserDatabse {
     label: string;
   }
 }
+
+/**
+ * TODO: Add Documentation
+ */
+declare enum PrivacyTypesEnum {
+  None,
+  Busy,
+  TitleOnly,
+  FullInformation
+}
+
+/**
+ * TODO: Add Documentation
+ */
+export type PrivacyTypes = keyof typeof PrivacyTypesEnum;

@@ -19,7 +19,11 @@ declare interface SelectionProps {
   userDatabase: UserDatabse.Document | null;
   calendars: { [key: string]: calendar_v3.Schema$CalendarList };
   selectedCalendars: { [key: string]: PrivacyTypes[] };
-  handleSelectCalendar: (accountId: string, index: number) => void;
+  handleSelectCalendar: (
+    accountId: string,
+    index: number,
+    privacyLevel: PrivacyTypes
+  ) => void;
   handleChangeStage: (newStage: number) => void;
   handleGetCalendars: () => void;
 }
@@ -82,31 +86,75 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
                   {calendarList.items &&
                     calendarList.items.map((item, index) => {
                       return (
-                        <ListItem
-                          key={`${accountId}_${index}`}
-                          button
-                          onClick={() => {
-                            handleSelectCalendar(accountId, index);
-                          }}
-                        >
-                        
-                          <FormControl component="fieldset" className={classes.formControl}>
-        <FormLabel component="legend">Select</FormLabel>
-        <RadioGroup aria-label="" name="" value={selectedCalendars[accountId] &&
-                              selectedCalendars[accountId][index]
-                                ? selectedCalendars[accountId][index]
-                                : PrivacyTypes.None} onChange={handleSelectCalendar}>
-          <FormControlLabel value= {PrivacyTypes.None} control={<Radio />} label="None" />
-          <FormControlLabel value= {PrivacyTypes.Busy} control={<Radio />} label="Busy" />
-          <FormControlLabel value={PrivacyTypes.TitleOnly} control={<Radio />} label="Title Only" />
-          <FormControlLabel value={PrivacyTypes.FullInformation} control={<Radio />} label="Full Information" />
-          <FormControlLabel
-            value="disabled"
-            control={<Radio />}
-            label="(Disabled option)"
-          />
-        </RadioGroup>
-      </FormControl>
+                        <ListItem key={`${accountId}_${index}`}>
+                          <FormControl
+                            component="fieldset"
+                            className={classes.formControl}
+                          >
+                            <FormLabel component="legend">
+                              Select Privacy Level to be Included In the Export
+                              Calendar
+                            </FormLabel>
+                            <RadioGroup
+                              aria-label=""
+                              name=""
+                              value={
+                                selectedCalendars[accountId] &&
+                                selectedCalendars[accountId][index]
+                                  ? selectedCalendars[accountId][index]
+                                  : "None"
+                              }
+                            >
+                              <FormControlLabel
+                                value={"None"}
+                                control={<Radio />}
+                                label="None"
+                                onClick={() => {
+                                  handleSelectCalendar(
+                                    accountId,
+                                    index,
+                                    "None"
+                                  );
+                                }}
+                              />
+                              <FormControlLabel
+                                value={"Busy"}
+                                control={<Radio />}
+                                label="Busy"
+                                onClick={() => {
+                                  handleSelectCalendar(
+                                    accountId,
+                                    index,
+                                    "Busy"
+                                  );
+                                }}
+                              />
+                              <FormControlLabel
+                                value={"TitleOnly"}
+                                control={<Radio />}
+                                label="Title Only"
+                                onClick={() => {
+                                  handleSelectCalendar(
+                                    accountId,
+                                    index,
+                                    "TitleOnly"
+                                  );
+                                }}
+                              />
+                              <FormControlLabel
+                                value={"FullInformation"}
+                                control={<Radio />}
+                                label="Full Information"
+                                onClick={() => {
+                                  handleSelectCalendar(
+                                    accountId,
+                                    index,
+                                    "FullInformation"
+                                  );
+                                }}
+                              />
+                            </RadioGroup>
+                          </FormControl>
 
                           {calendarList.items && calendarList.items[index]
                             ? calendarList.items[index].summary

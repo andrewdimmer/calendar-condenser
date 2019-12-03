@@ -27,13 +27,19 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
   handleChangeStage,
   userDatabase
 }) => {
-  const [ownerID, setOwnerID] = React.useState(
-    userDatabase && userDatabase.accounts.length > 0
-      ? userDatabase.accounts[0].accountId
-      : ""
-  );
+  const [ownerId, setOwnerId] = React.useState("");
+  const [ownerIdLoaded, setOwnerIdLoaded] = React.useState(false);
+
+  const handleInitialLoad = () => {
+    if (userDatabase && !ownerIdLoaded) {
+      setOwnerIdLoaded(true);
+      setOwnerId(userDatabase.accounts[0].accountId);
+    }
+  };
+
   return (
     <Fragment>
+      {userDatabase && !ownerIdLoaded && handleInitialLoad()}
       <TextField
         variant="outlined"
         label="Calendar name"
@@ -41,16 +47,17 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         onChange={e => (calendarName = e.target.value)}
       ></TextField>
       <Typography variant="h5">Set Account Owner</Typography>
-      <RadioGroup value={ownerID}>
+      <RadioGroup value={ownerId}>
         {userDatabase &&
           userDatabase.accounts.map(({ accountId, label }) => {
             return (
               <FormControlLabel
+                key={accountId}
                 value={accountId}
                 label={label}
                 control={<Radio />}
                 onClick={() => {
-                  setOwnerID(accountId);
+                  setOwnerId(accountId);
                 }}
               >
                 <div>

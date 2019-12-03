@@ -10,7 +10,7 @@ export declare interface State {
   currentUser: User | null;
   userDatabase: UserDatabse.Document | null;
   calendars: { [key: string]: calendar_v3.Schema$CalendarList };
-  selectedCalendars: { [key: string]: boolean[] };
+  selectedCalendars: { [key: string]: PrivacyTypes[] };
   stage: string | number;
   profilePage: boolean;
 }
@@ -24,7 +24,7 @@ export declare interface UpdateState {
   newCurrentUser?: User | null;
   newUserDatabase?: UserDatabse.Document | null;
   newCalendars?: { [key: string]: calendar_v3.Schema$CalendarList };
-  newSelectedCalendars?: { [key: string]: boolean[] };
+  newSelectedCalendars?: { [key: string]: PrivacyTypes[] };
   newStage?: string | number;
   newProfilePage?: boolean;
 }
@@ -41,7 +41,7 @@ export declare interface CookieState {
 /**
  * TODO: Add Documentation
  */
-export declare enum notificationTypes {
+declare enum notificationTypes {
   success,
   error,
   info,
@@ -77,3 +77,18 @@ export namespace UserDatabse {
     label: string;
   }
 }
+
+/**
+ * TODO: Add Documentation
+ */
+declare enum PrivacyTypesEnum {
+  None,
+  Busy,
+  TitleOnly,
+  FullInformation
+}
+
+/**
+ * TODO: Add Documentation
+ */
+export type PrivacyTypes = keyof typeof PrivacyTypesEnum;

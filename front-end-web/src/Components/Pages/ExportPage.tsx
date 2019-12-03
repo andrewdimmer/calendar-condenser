@@ -41,7 +41,7 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         onChange={e => (calendarName = e.target.value)}
       ></TextField>
       <Typography variant="h5">Set Account Owner</Typography>
-      <RadioGroup>
+      <RadioGroup value={setOwnerID}>
         {userDatabase &&
           userDatabase.accounts.map(({ accountId, label }) => {
             return (

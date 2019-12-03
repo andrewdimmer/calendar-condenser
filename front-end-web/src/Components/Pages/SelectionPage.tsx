@@ -87,7 +87,7 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
                       return (
                         <ListItem key={`${accountId}_${index}`}>
                           <div>
-                          <Typography variant="h5">{calendarList.items && calendarList.items[index]
+                          <Typography variant="h6">{calendarList.items && calendarList.items[index]
                             ? calendarList.items[index].summary
                             : ""}</Typography>
                           <FormControl

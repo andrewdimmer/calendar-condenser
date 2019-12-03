@@ -569,6 +569,7 @@ const MainPage: React.FunctionComponent = () => {
       />
       <ProfilePage
         openPage={profilePage}
+        currentUser={currentUser}
         handleToggleProfile={handleToggleProfile}
         handleNewNotification={handleChangeNotification}
       ></ProfilePage>

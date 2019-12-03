@@ -8,7 +8,6 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
 import React from "react";
 import { User } from "firebase";
-import { statement } from "@babel/template";
 
 declare interface NavProps {
   classes: any;

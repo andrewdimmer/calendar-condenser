@@ -9,11 +9,11 @@ import {
   DialogTitle
 } from "@material-ui/core";
 import React, { Fragment } from "react";
-import firebase from "firebase";
-import firebaseApp from "../../scripts/firebaseConfig";
+import { User } from "firebase";
 import { NotificationMessage } from "../../@Types";
 declare interface ProfileProps {
   openPage: boolean;
+  currentUser: User | null;
   handleToggleProfile: () => void;
 
   handleNewNotification: (NewNotification: NotificationMessage) => void;
@@ -30,10 +30,9 @@ let newName: string = "";
 let currentName: string = "";
 let currentEmail: string = "";
 
-firebaseApp.auth();
-
 const ProfilePage: React.FunctionComponent<ProfileProps> = ({
   openPage,
+  currentUser,
   handleToggleProfile,
   handleNewNotification
 }) => {
@@ -44,7 +43,6 @@ const ProfilePage: React.FunctionComponent<ProfileProps> = ({
   //};
 
   const handleChangeEmail = () => {
-    const currentUser = firebase.auth().currentUser;
     if (currentUser) {
       currentUser.updateEmail(newEmail);
       handleNewNotification({
@@ -56,7 +54,6 @@ const ProfilePage: React.FunctionComponent<ProfileProps> = ({
   };
 
   const handleChangePass = () => {
-    const currentUser = firebase.auth().currentUser;
     if (currentUser) {
       currentUser.updatePassword(newPassword);
       handleNewNotification({
@@ -89,7 +86,6 @@ const ProfilePage: React.FunctionComponent<ProfileProps> = ({
   };
 
   const handleChangeName = () => {
-    const currentUser = firebase.auth().currentUser;
     if (currentUser) {
       currentUser.updateProfile({ displayName: newName });
       handleNewNotification({
@@ -99,7 +95,7 @@ const ProfilePage: React.FunctionComponent<ProfileProps> = ({
       });
     }
   };
-  const currentUser = firebase.auth().currentUser;
+
   if (currentUser) {
     if (currentUser.displayName !== null) {
       currentName = currentUser.displayName;
@@ -122,22 +118,22 @@ const ProfilePage: React.FunctionComponent<ProfileProps> = ({
             defaultValue={currentName}
             onChange={e => (newName = e.target.value)}
           />
+          <Button onClick={handleChangeName} color="primary">
+            Save new name
+          </Button>
+          <TextField
+            margin="dense"
+            helperText="Email"
+            id="email"
+            fullWidth
+            type="email"
+            defaultValue={currentEmail}
+            onChange={e => (newEmail = e.target.value)}
+          />
+          <Button onClick={handleChangeEmail} color="primary">
+            Save new email
+          </Button>
         </DialogContent>
-        <Button onClick={handleChangeName} color="primary">
-          Save new name
-        </Button>
-        <TextField
-          margin="dense"
-          helperText="Email"
-          id="email"
-          fullWidth
-          type="email"
-          defaultValue={currentEmail}
-          onChange={e => (newEmail = e.target.value)}
-        />
-        <Button onClick={handleChangeEmail} color="primary">
-          Save new email
-        </Button>
         <DialogActions>
           <Button onClick={handleOpenPasswordDia} color="primary">
             Reset Password
@@ -159,19 +155,19 @@ const ProfilePage: React.FunctionComponent<ProfileProps> = ({
             type="password"
             onChange={e => (newPassword = e.target.value)}
           />
+          <TextField
+            margin="dense"
+            helperText="Re-type the password"
+            id="passCheck"
+            fullWidth
+            type="password"
+            onChange={e => (newPasswordCheck = e.target.value)}
+          />
         </DialogContent>
-        <TextField
-          margin="dense"
-          helperText="Re-type the password"
-          id="passCheck"
-          fullWidth
-          type="password"
-          onChange={e => (newPasswordCheck = e.target.value)}
-        />
-        <Button onClick={handleNewPassword} color="primary">
-          Save new password
-        </Button>
         <DialogActions>
+          <Button onClick={handleNewPassword} color="primary">
+            Save new password
+          </Button>
           <Button onClick={handleClosePasswordDia} color="primary">
             Close
           </Button>

@@ -135,24 +135,57 @@ const getCalendarEventsSingleCalendar = (
     pageToken?: string;
     minStartTime?: Date;
     minUpdateTime?: Date;
-  }
-) => {
+  },
+  onlyFirstPage?: boolean,
+  calendar?: calendar_v3.Calendar
+): Promise<calendar_v3.Schema$Event[] | null> => {
   // Create an OAuth client for the current key
   try {
-    const oauth2Client = getOauth2Client("");
-    oauth2Client.setCredentials({
-      refresh_token
-    });
+    if (!calendar) {
+      const oauth2Client = getOauth2Client("");
+      oauth2Client.setCredentials({
+        refresh_token
+      });
 
-    // After getting the OAuth client, get the events on the specified calendar
-    const calendar = google.calendar({
-      version: "v3",
-      auth: oauth2Client
-    });
+      // After getting the OAuth client, get the events on the specified calendar
+      calendar = google.calendar({
+        version: "v3",
+        auth: oauth2Client
+      });
+    }
+    const googleParams: calendar_v3.Params$Resource$Events$List = params;
+    googleParams.singleEvents = true;
     return calendar.events
-      .list(params)
+      .list(googleParams)
       .then(events => {
-        return events.data;
+        if (events.data && events.data.items) {
+          const items = events.data.items;
+          if (!onlyFirstPage && events.data.nextPageToken) {
+            params.pageToken = events.data.nextPageToken;
+            return getCalendarEventsSingleCalendar(
+              { accountId, refresh_token },
+              params,
+              onlyFirstPage,
+              calendar
+            )
+              .then(nextPageData => {
+                if (nextPageData) {
+                  return items.concat(nextPageData);
+                } else {
+                  console.log("The next page of event data returned `null`");
+                  return null;
+                }
+              })
+              .catch(err => {
+                console.log(err);
+                console.log("Unable to get next page of events.");
+                return null;
+              });
+          } else {
+            return items;
+          }
+        }
+        return null;
       })
       .catch(err => {
         console.log(err);

@@ -36,7 +36,7 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         fullWidth={true}
         onChange={e => (calendarName = e.target.value)}
       ></TextField>
-      <Typography variant="body1">Set Account Owner</Typography>
+      <Typography variant="h5">Set Account Owner</Typography>
       <RadioGroup>
         {userDatabase &&
           userDatabase.accounts.map(({ accountId, label }) => {

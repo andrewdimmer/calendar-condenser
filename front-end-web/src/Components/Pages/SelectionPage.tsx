@@ -1,6 +1,5 @@
 import {
   Button,
-  Checkbox,
   List,
   ListItem,
   Typography,
@@ -87,13 +86,16 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
                     calendarList.items.map((item, index) => {
                       return (
                         <ListItem key={`${accountId}_${index}`}>
+                          <div>
+                          <Typography variant="h5">{calendarList.items && calendarList.items[index]
+                            ? calendarList.items[index].summary
+                            : ""}</Typography>
                           <FormControl
                             component="fieldset"
                             className={classes.formControl}
                           >
                             <FormLabel component="legend">
-                              Select Privacy Level to be Included In the Export
-                              Calendar
+                              Select Privacy Level
                             </FormLabel>
                             <RadioGroup
                               aria-label=""
@@ -104,7 +106,7 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
                                   ? selectedCalendars[accountId][index]
                                   : "None"
                               }
-                            >
+                            ><div>
                               <FormControlLabel
                                 value={"None"}
                                 control={<Radio />}
@@ -153,12 +155,10 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
                                   );
                                 }}
                               />
+                              </div>
                             </RadioGroup>
                           </FormControl>
-
-                          {calendarList.items && calendarList.items[index]
-                            ? calendarList.items[index].summary
-                            : ""}
+                      </div>
                         </ListItem>
                       );
                     })}

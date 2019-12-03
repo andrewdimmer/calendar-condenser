@@ -1,5 +1,13 @@
-import { Button, TextField } from "@material-ui/core";
+import {
+  Button,
+  TextField,
+  Radio,
+  RadioGroup,
+  Typography,
+  FormControlLabel
+} from "@material-ui/core";
 import React, { Fragment } from "react";
+import { UserDatabse } from "../../@Types";
 
 /**
  * TODO: Add Documentation
@@ -10,13 +18,16 @@ declare interface ExportProps {
   classes: any;
   handleExport: (calendarName: string) => void;
   handleChangeStage: (newStage: number) => void;
+  userDatabase: UserDatabse.Document | null;
 }
 
 const ExportPage: React.FunctionComponent<ExportProps> = ({
   classes,
   handleExport,
-  handleChangeStage
+  handleChangeStage,
+  userDatabase
 }) => {
+  const [ownerID, setOwnerID] = React.useState("");
   return (
     <Fragment>
       <TextField
@@ -25,6 +36,26 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         fullWidth={true}
         onChange={e => (calendarName = e.target.value)}
       ></TextField>
+      <Typography variant="body1">Set Account Owner</Typography>
+      <RadioGroup>
+        {userDatabase &&
+          userDatabase.accounts.map(({ accountId, label }) => {
+            return (
+              <FormControlLabel
+                value={accountId}
+                label={label}
+                control={<Radio />}
+                onClick={() => {
+                  setOwnerID(accountId);
+                }}
+              >
+                <div>
+                  <Typography variant="h5">{label}</Typography>
+                </div>
+              </FormControlLabel>
+            );
+          })}
+      </RadioGroup>
       <Button
         variant="contained"
         color="primary"

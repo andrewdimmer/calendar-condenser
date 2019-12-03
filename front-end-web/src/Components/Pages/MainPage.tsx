@@ -649,6 +649,7 @@ const MainPage: React.FunctionComponent = () => {
                   classes={classes}
                   handleExport={handleExport}
                   handleChangeStage={handleChangeStage}
+                  userDatabase={userDatabase}
                 />
               </Fragment>
             )}

@@ -3,8 +3,10 @@ import { google, calendar_v3 } from "googleapis";
 import { getOauth2Client } from "./authHandlers";
 import firebaseapp from "./firebaseConfig";
 
-// Start writing Firebase Functions
-// https://firebase.google.com/docs/functions/typescript
+/**
+ * getCalendarList
+ * TODO: Add documentation
+ */
 export const getCalendarList = functions.https.onRequest(
   async (request, response) => {
     response.setHeader("Access-Control-Allow-Origin", "*"); // FIXME: Make more secure later!
@@ -74,6 +76,11 @@ export const getCalendarList = functions.https.onRequest(
   }
 );
 
+/**
+ * getCalendarListHelper
+ * TODO: Add documentation
+ * @param param0
+ */
 const getCalendarListHelper = async ({
   accountId,
   refresh_token
@@ -81,7 +88,7 @@ const getCalendarListHelper = async ({
   accountId: string;
   refresh_token: string;
 }): Promise<calendar_v3.Schema$CalendarList | null> => {
-  // For each key, create an OAuth client
+  // Create an OAuth client for the current key
   try {
     const oauth2Client = getOauth2Client("");
     oauth2Client.setCredentials({
@@ -113,3 +120,107 @@ const getCalendarListHelper = async ({
     return null;
   }
 };
+
+const getCalendarEventsSingleCalendar = (
+  { accountId, refresh_token }: { accountId: string; refresh_token: string },
+  params: {
+    calendarId: string;
+    pageToken?: string;
+    minStartTime?: Date;
+    minUpdateTime?: Date;
+  }
+) => {
+  // Create an OAuth client for the current key
+  try {
+    const oauth2Client = getOauth2Client("");
+    oauth2Client.setCredentials({
+      refresh_token
+    });
+
+    // After getting the OAuth client, get the events on the specified calendar
+    const calendar = google.calendar({
+      version: "v3",
+      auth: oauth2Client
+    });
+    return calendar.events
+      .list(params)
+      .then(events => {
+        return events.data;
+      })
+      .catch(err => {
+        console.log(err);
+        console.log(
+          `Unable to get calendar ${params.calendarId} for accountId ${accountId}`
+        );
+        return null;
+      });
+  } catch (err) {
+    console.log(err);
+    console.log(
+      `Unable to create OAuth client for refresh token ${refresh_token}`
+    );
+    return new Promise(() => {
+      return null;
+    });
+  }
+};
+
+/**
+ * getCalendarEvents
+ * NOTE: This is a test function, and likely should not be used publically.
+ */
+export const getCalendarEvents = functions.https.onRequest(
+  async (request, response) => {
+    response.setHeader("Access-Control-Allow-Origin", "*"); // FIXME: Make more secure later!
+    try {
+      const jsonBody = JSON.parse(request.body);
+      const userId = jsonBody.userId;
+      const accountId = jsonBody.accountId;
+      const calendarId = jsonBody.calendarId;
+      if (!userId || !accountId || !calendarId) {
+        throw new Error("Missing one or more required parameters.");
+      }
+      firebaseapp
+        .firestore()
+        .collection("keys")
+        .doc(userId)
+        .get()
+        .then(keysDoc => {
+          const keysData = keysDoc.data();
+          if (keysData) {
+            getCalendarEventsSingleCalendar(keysData.accounts[accountId], {
+              calendarId
+            })
+              .then(calendarEventData => {
+                if (calendarEventData) {
+                  response.status(200).send(JSON.stringify(calendarEventData));
+                } else {
+                  console.log("Single calendar returned null");
+                  response
+                    .status(500)
+                    .send("Unable to get one or more calendars.");
+                }
+              })
+              .catch(err => {
+                console.log(err);
+                console.log("Error getting single calendar.");
+                response
+                  .status(500)
+                  .send("Unable to get one or more calendars.");
+              });
+          } else {
+            console.log("User's keys do not exist in the database.");
+            response.status(500).send("Unable to get one or more calendars.");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          console.log("User does not exist in the database.");
+          response.status(500).send("Unable to get one or more calendars.");
+        });
+    } catch (err) {
+      console.log(err);
+      response.status(500).send("Missing userId, accountId and/or calendarID");
+    }
+  }
+);

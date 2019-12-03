@@ -4,6 +4,7 @@ import { getUser } from "./databaseHandler";
 import {
   getCalendarList,
   getCalendarEvents,
+  createExportCalendar
 } from "./calendarListHandlers";
 
 // Start writing Firebase Functions
@@ -20,6 +21,7 @@ export const get_token = getToken;
 
 // Calendar List fuctions
 export const get_calendar_list = getCalendarList;
+export const create_export_calendar = createExportCalendar;
 
 //Database functions
 export const get_user = getUser;

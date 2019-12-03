@@ -12,6 +12,7 @@ export declare interface State {
   calendars: { [key: string]: calendar_v3.Schema$CalendarList };
   selectedCalendars: { [key: string]: boolean[] };
   stage: string | number;
+  profilePage: boolean;
 }
 
 /**
@@ -25,6 +26,7 @@ export declare interface UpdateState {
   newCalendars?: { [key: string]: calendar_v3.Schema$CalendarList };
   newSelectedCalendars?: { [key: string]: boolean[] };
   newStage?: string | number;
+  newProfilePage?: boolean;
 }
 
 /**

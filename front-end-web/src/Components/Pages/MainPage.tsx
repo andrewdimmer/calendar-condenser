@@ -29,7 +29,8 @@ import {
   LoadingPage,
   LoginPage,
   SelectionPage,
-  SuccessPage
+  SuccessPage,
+  ProfilePage
 } from "./";
 
 /**
@@ -44,7 +45,8 @@ const MainPage: React.FunctionComponent = () => {
     userDatabase: null,
     calendars: {},
     selectedCalendars: {},
-    stage: 0
+    stage: 0,
+    profilePage: false
   };
   const [
     {
@@ -54,7 +56,8 @@ const MainPage: React.FunctionComponent = () => {
       userDatabase,
       calendars,
       selectedCalendars,
-      stage
+      stage,
+      profilePage
     },
     setState
   ] = React.useState(initialState);
@@ -78,7 +81,8 @@ const MainPage: React.FunctionComponent = () => {
     newUserDatabase,
     newCalendars,
     newSelectedCalendars,
-    newStage
+    newStage,
+    newProfilePage
   }: UpdateState) => {
     const newState: State = {
       busyMessage: newBusyMessage !== undefined ? newBusyMessage : busyMessage,
@@ -90,7 +94,8 @@ const MainPage: React.FunctionComponent = () => {
       selectedCalendars: newSelectedCalendars
         ? newSelectedCalendars
         : selectedCalendars,
-      stage: newStage !== undefined ? newStage : stage
+      stage: newStage !== undefined ? newStage : stage,
+      profilePage: newProfilePage !== undefined ? newProfilePage : profilePage
     };
     setState(newState);
     const cookieState: CookieState = {
@@ -546,6 +551,13 @@ const MainPage: React.FunctionComponent = () => {
     handleUpdateState({ newNotification });
   };
 
+  const handleToggleProfile = () => {
+    let newProfilePage: boolean = !profilePage;
+    handleUpdateState({
+      newProfilePage
+    });
+  };
+
   const classes = styles();
   return (
     <Fragment>
@@ -555,6 +567,11 @@ const MainPage: React.FunctionComponent = () => {
         open={notification.open}
         update={handleChangeNotification}
       />
+      <ProfilePage
+        openPage={profilePage}
+        handleToggleProfile={handleToggleProfile}
+        handleNewNotification={handleChangeNotification}
+      ></ProfilePage>
       {handleLoad()}
       {busyMessage && (
         <LoadingPage busyMessage={busyMessage} classes={classes} />
@@ -564,6 +581,7 @@ const MainPage: React.FunctionComponent = () => {
           <NavBar
             currentUser={currentUser}
             handleLogout={handleLogout}
+            handleToggleProfile={handleToggleProfile}
             classes={classes}
           />
           <Container className={classes.topMargined}>

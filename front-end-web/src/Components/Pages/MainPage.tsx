@@ -11,7 +11,8 @@ import {
   CookieState,
   NotificationMessage,
   State,
-  UpdateState
+  UpdateState,
+  PrivacyTypes
 } from "../../@Types";
 import {
   getAuthToken,
@@ -197,11 +198,11 @@ const MainPage: React.FunctionComponent = () => {
    */
   const handleSelectCalendar = (accountId: string, index: number) => {
     if (selectedCalendars) {
-      const newSelectedCalendars = {} as { [key: string]: boolean[] };
+      const newSelectedCalendars = {} as { [key: string]: PrivacyTypes[] };
       for (const key in selectedCalendars) {
         newSelectedCalendars[key] = selectedCalendars[key].splice(0);
-      }
-      newSelectedCalendars[accountId][index] = !newSelectedCalendars[accountId][
+      } 
+      newSelectedCalendars[accountId][ index] = !newSelectedCalendars[accountId][
         index
       ];
       handleUpdateState({ newSelectedCalendars });
@@ -467,11 +468,11 @@ const MainPage: React.FunctionComponent = () => {
         getUserCalendars(currentUser.uid)
           .then(newCalendars => {
             if (newCalendars) {
-              const newSelectedCalendars: { [key: string]: boolean[] } = {};
+              const newSelectedCalendars: { [key: string]: PrivacyTypes[] } = {};
               for (const accountId in newCalendars) {
                 const currentAccount = newCalendars[accountId];
                 newSelectedCalendars[accountId] = currentAccount.items
-                  ? currentAccount.items.map(() => false)
+                  ? currentAccount.items.map(() => PrivacyTypes.None)
                   : [];
               }
               handleUpdateState({

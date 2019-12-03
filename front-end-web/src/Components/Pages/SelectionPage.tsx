@@ -3,17 +3,22 @@ import {
   Checkbox,
   List,
   ListItem,
-  Typography
+  Typography,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio
 } from "@material-ui/core";
 import { calendar_v3 } from "googleapis";
 import React, { Fragment } from "react";
-import { UserDatabse } from "../../@Types";
+import { UserDatabse, PrivacyTypes } from "../../@Types";
 
 declare interface SelectionProps {
   classes: any;
   userDatabase: UserDatabse.Document | null;
   calendars: { [key: string]: calendar_v3.Schema$CalendarList };
-  selectedCalendars: { [key: string]: boolean[] };
+  selectedCalendars: { [key: string]: PrivacyTypes[] };
   handleSelectCalendar: (accountId: string, index: number) => void;
   handleChangeStage: (newStage: number) => void;
   handleGetCalendars: () => void;
@@ -84,14 +89,24 @@ const SelectionPage: React.FunctionComponent<SelectionProps> = ({
                             handleSelectCalendar(accountId, index);
                           }}
                         >
-                          <Checkbox
-                            checked={
-                              selectedCalendars[accountId] &&
+                        
+                          <FormControl component="fieldset" className={classes.formControl}>
+        <FormLabel component="legend">Select</FormLabel>
+        <RadioGroup aria-label="" name="" value={selectedCalendars[accountId] &&
                               selectedCalendars[accountId][index]
                                 ? selectedCalendars[accountId][index]
-                                : false
-                            }
-                          />
+                                : PrivacyTypes.None} onChange={handleSelectCalendar}>
+          <FormControlLabel value= {PrivacyTypes.None} control={<Radio />} label="None" />
+          <FormControlLabel value= {PrivacyTypes.Busy} control={<Radio />} label="Busy" />
+          <FormControlLabel value={PrivacyTypes.TitleOnly} control={<Radio />} label="Title Only" />
+          <FormControlLabel value={PrivacyTypes.FullInformation} control={<Radio />} label="Full Information" />
+          <FormControlLabel
+            value="disabled"
+            control={<Radio />}
+            label="(Disabled option)"
+          />
+        </RadioGroup>
+      </FormControl>
 
                           {calendarList.items && calendarList.items[index]
                             ? calendarList.items[index].summary

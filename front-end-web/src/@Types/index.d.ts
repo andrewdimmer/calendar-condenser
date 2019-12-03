@@ -10,7 +10,7 @@ export declare interface State {
   currentUser: User | null;
   userDatabase: UserDatabse.Document | null;
   calendars: { [key: string]: calendar_v3.Schema$CalendarList };
-  selectedCalendars: { [key: string]: boolean[] };
+  selectedCalendars: { [key: string]: PrivacyTypes[] };
   stage: string | number;
 }
 
@@ -23,7 +23,7 @@ export declare interface UpdateState {
   newCurrentUser?: User | null;
   newUserDatabase?: UserDatabse.Document | null;
   newCalendars?: { [key: string]: calendar_v3.Schema$CalendarList };
-  newSelectedCalendars?: { [key: string]: boolean[] };
+  newSelectedCalendars?: { [key: string]: PrivacyTypes[] };
   newStage?: string | number;
 }
 
@@ -44,8 +44,15 @@ export declare enum notificationTypes {
   error,
   info,
   warning
-}
 
+}
+export declare enum PrivacyTypes {
+  None, 
+  Busy, 
+  TitleOnly, 
+  FullInformation
+
+}
 /**
  * TODO: Add Documentation
  */

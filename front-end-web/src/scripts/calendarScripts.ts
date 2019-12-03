@@ -82,12 +82,20 @@ export function getUserCalendars(
  */
 export function createExportCalendar(
   userId: string,
-  calendars: calendar_v3.Schema$CalendarList,
-  name: string
+  ownerAccountId: string,
+  exportCalendarName: string
 ): Promise<boolean> {
-  // FIXME: Currently a Stub
-  // TODO: Add implemenation
-  return new Promise((resolve, reject) => {
-    resolve(true);
-  });
+  return ky
+    .post(
+      "https://us-central1-calendar-condenser-gcp.cloudfunctions.net/create_export_calendar",
+      { body: JSON.stringify({ userId, ownerAccountId, exportCalendarName }) }
+    )
+    .then(response => {
+      console.log(response);
+      return true;
+    })
+    .catch(err => {
+      console.log(err);
+      return false;
+    });
 }

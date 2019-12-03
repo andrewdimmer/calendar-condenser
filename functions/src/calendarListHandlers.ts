@@ -236,9 +236,9 @@ export const createExportCalendar = functions.https.onRequest(
       // Process Input
       const jsonBody = JSON.parse(request.body);
       const userId = jsonBody.userId;
-      const accountId = jsonBody.accountId;
+      const ownerAccountId = jsonBody.ownerAccountId;
       const exportCalendarName = jsonBody.exportCalendarName;
-      if (!userId || !accountId || !exportCalendarName) {
+      if (!userId || !ownerAccountId || !exportCalendarName) {
         throw new Error("Missing one or more required parameters.");
       }
       firebaseapp
@@ -252,7 +252,7 @@ export const createExportCalendar = functions.https.onRequest(
             // Create the Google OAuth client
             const oauth2Client = getOauth2Client("");
             oauth2Client.setCredentials({
-              refresh_token: keysData.accounts[accountId].refresh_token
+              refresh_token: keysData.accounts[ownerAccountId].refresh_token
             });
             const calendar = google.calendar({
               version: "v3",

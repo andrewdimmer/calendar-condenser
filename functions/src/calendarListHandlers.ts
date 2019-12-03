@@ -2,6 +2,7 @@ import * as functions from "firebase-functions";
 import { google, calendar_v3 } from "googleapis";
 import { getOauth2Client } from "./authHandlers";
 import firebaseapp from "./firebaseConfig";
+import { ExportCalendar, SelectedCalendarShorthand } from "./@Types";
 
 /**
  * getCalendarList
@@ -121,6 +122,12 @@ const getCalendarListHelper = async ({
   }
 };
 
+/**
+ * getCalendarEventsSingleCalendar
+ * TODO: Add Documentation
+ * @param param0
+ * @param params
+ */
 const getCalendarEventsSingleCalendar = (
   { accountId, refresh_token }: { accountId: string; refresh_token: string },
   params: {
@@ -236,9 +243,12 @@ export const createExportCalendar = functions.https.onRequest(
       // Process Input
       const jsonBody = JSON.parse(request.body);
       const userId = jsonBody.userId;
-      const ownerAccountId = jsonBody.ownerAccountId;
-      const exportCalendarName = jsonBody.exportCalendarName;
-      if (!userId || !ownerAccountId || !exportCalendarName) {
+      const {
+        calendarName,
+        ownerAccountId,
+        includedCalendars
+      }: ExportCalendar = jsonBody.exportCalendar;
+      if (!userId || !ownerAccountId || !calendarName) {
         throw new Error("Missing one or more required parameters.");
       }
       firebaseapp
@@ -265,12 +275,13 @@ export const createExportCalendar = functions.https.onRequest(
                   "This is an export calendar created by Calendar Condenser. " +
                   "Please do not edit this directly, aside from updating shareing settings. " +
                   "To manage this calendar, login to https://calendar-condenser-gcp.web.app to update the settings.",
-                summary: exportCalendarName
+                summary: calendarName
               }
             };
             calendar.calendars
               .insert(params)
               .then(createdCalendar => {
+                // Save Created Calendar Information to Database
                 const userDocRef = firebaseapp
                   .firestore()
                   .collection("users")
@@ -282,8 +293,10 @@ export const createExportCalendar = functions.https.onRequest(
                     const exportCalendarData = createdCalendar.data;
                     if (userData && exportCalendarData.id) {
                       userData.exports[exportCalendarData.id] = {
-                        calendarData: exportCalendarData,
-                        includedCalendars: []
+                        calendarName,
+                        calendarId: exportCalendarData.id,
+                        ownerAccountId,
+                        includedCalendars
                       };
                       userDocRef.set(userData).then(() => {
                         console.log(

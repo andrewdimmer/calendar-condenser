@@ -606,6 +606,7 @@ const MainPage: React.FunctionComponent = () => {
                   handleAuth={handleAuth}
                   classes={classes}
                   handleChangeStage={handleChangeStage}
+                  userDatabase={userDatabase}
                 />
               </Fragment>
             )}

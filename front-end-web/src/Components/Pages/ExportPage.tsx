@@ -7,7 +7,7 @@ import {
   FormControlLabel
 } from "@material-ui/core";
 import React, { Fragment } from "react";
-import { UserDatabse } from "../../@Types";
+import { UserDatabase } from "../../@Types";
 
 /**
  * TODO: Add Documentation
@@ -17,14 +17,12 @@ let calendarName: string = "";
 declare interface ExportProps {
   classes: any;
   handleExport: (calendarName: string, ownerAccountId: string) => void;
-  handleChangeStage: (newStage: number) => void;
-  userDatabase: UserDatabse.Document | null;
+  userDatabase: UserDatabase.Document | null;
 }
 
 const ExportPage: React.FunctionComponent<ExportProps> = ({
   classes,
   handleExport,
-  handleChangeStage,
   userDatabase
 }) => {
   const [ownerId, setOwnerId] = React.useState("");
@@ -73,7 +71,6 @@ const ExportPage: React.FunctionComponent<ExportProps> = ({
         size="large"
         className={classes.button}
         onClick={function() {
-          const ownerId = ""; //FIXME: Resolve in merge with James' branch
           handleExport(calendarName, ownerId);
         }}
       >

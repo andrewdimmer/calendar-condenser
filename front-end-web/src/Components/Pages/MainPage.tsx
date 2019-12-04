@@ -227,10 +227,9 @@ const MainPage: React.FunctionComponent = () => {
   /**
    * handleExport
    * Create the export calendar based off of the settings specified.
-   * @param name The name to give the export calendar.
-   *
-   * FIXME: Currently a stub
-   * TODO: Update to actually do something.
+   * @param calendarName The name to give the export calendar.
+   * @param ownerAccountId The accountId of the Google Account that will be the export calendar owner.
+   * TODO: Add Documentation
    */
   const handleExport = (calendarName: string, ownerAccountId: string) => {
     // Streamline Selected Calendars
@@ -729,7 +728,6 @@ const MainPage: React.FunctionComponent = () => {
                 <ExportPage
                   classes={classes}
                   handleExport={handleExport}
-                  handleChangeStage={handleChangeStage}
                   userDatabase={userDatabase}
                 />
               </Fragment>

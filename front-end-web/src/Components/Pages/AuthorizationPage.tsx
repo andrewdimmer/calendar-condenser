@@ -1,14 +1,16 @@
 import {
   Button,
-  Typography,
+  Dialog,
+  DialogActions,
+  DialogTitle,
   List,
   ListItem,
-  ListItemIcon
+  Typography,
+  TextField
 } from "@material-ui/core";
-import { calendar_v3 } from "googleapis";
+import EditIcon from "@material-ui/icons/Edit";
 import React, { Fragment } from "react";
 import { UserDatabse } from "../../@Types";
-import EditIcon from "@material-ui/icons/Edit";
 
 declare interface AuthorizationProps {
   classes: any;
@@ -37,6 +39,7 @@ const AuthorizationPage: React.FunctionComponent<AuthorizationProps> = ({
             return (
               <ListItem key={accountId}>
                 <div>
+                  <EditIcon onClick={FormDialog}></EditIcon>
                   <Typography variant="h5">{label}</Typography>
                 </div>
               </ListItem>
@@ -68,3 +71,40 @@ const AuthorizationPage: React.FunctionComponent<AuthorizationProps> = ({
 };
 
 export default AuthorizationPage;
+
+const FormDialog: React.FunctionComponent<any> = () => {
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <div>
+      <EditIcon color="primary" onClick={handleClickOpen}>
+        Rename Label
+      </EditIcon>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle id="form-dialog-title">Rename Label</DialogTitle>
+        <TextField value={value} onChange={v => setValue(v)}></TextField>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Rename
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
